@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
 import { Routes, Route, Navigate, NavLink, useNavigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import ServicesLayout from "./services/ServicesLayout";
