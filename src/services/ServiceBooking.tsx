@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, CalendarClock } from "lucide-react";
 import { findPackage, getKind, KIND_META, WEBINAR_EVENT } from "./serviceConfig";
@@ -24,6 +24,10 @@ export default function ServiceBooking() {
   const meta = KIND_META[kind];
   const { estimate } = useEstimate(pkg.id, kind === "homecare", distanceKm);
   const total = estimate?.total ?? pkg.price;
+
+  useEffect(() => {
+    if (receipt && receipt.serviceName !== pkg.name) setReceipt(null);
+  }, [pkg.name, receipt, setReceipt]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
