@@ -78,7 +78,7 @@ export default function ServicesLayout() {
               type="button"
               disabled={!it.enabled}
               onClick={() => it.enabled && navigate(it.to)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl transition cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${
                 step === it.n ? "bg-[#3F322F] text-white shadow-md font-bold" : "hover:bg-[#EADCC9]/30 text-[#5C453C]"
               }`}
             >
