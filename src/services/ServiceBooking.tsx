@@ -3,7 +3,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, CalendarClock } from "lucide-react";
 import { findPackage, getKind, KIND_META, WEBINAR_EVENT } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
-import { useServices, Receipt } from "./ServicesLayout";
+import { useServices } from "./ServicesLayout";
 
 const formatIDR = (num: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
