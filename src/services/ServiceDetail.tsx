@@ -11,7 +11,7 @@ export default function ServiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const pkg = findPackage(id);
-  const { isHomecare, setIsHomecare, distanceKm, setDistanceKm, classMode, setClassMode } = useServices();
+  const { setIsHomecare, distanceKm, setDistanceKm, classMode, setClassMode } = useServices();
 
   if (!pkg) return <Navigate to="/layanan" replace />;
 
