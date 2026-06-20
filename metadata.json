@@ -1,0 +1,6 @@
+{
+  "name": "Gayatri Layanan Laktasi",
+  "description": "Pendamping setia perjalanan menyusui Mama: Edu Hub tantangan laktasi mandiri, bimbingan klinik, dan pemesanan layanan Homecare profesional.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
