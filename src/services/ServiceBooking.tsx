@@ -18,16 +18,17 @@ export default function ServiceBooking() {
   const { distanceKm, classMode, draft, setDraft, receipt, setReceipt } = useServices();
   const [warning, setWarning] = useState<string | null>(null);
 
-  if (!pkg) return <Navigate to="/layanan" replace />;
-
-  const kind = getKind(pkg);
+  const kind = pkg ? getKind(pkg) : "class";
   const meta = KIND_META[kind];
-  const { estimate } = useEstimate(pkg.id, kind === "homecare", distanceKm);
-  const total = estimate?.total ?? pkg.price;
+  const { estimate } = useEstimate(pkg?.id ?? "", kind === "homecare", distanceKm);
 
   useEffect(() => {
-    if (receipt && receipt.serviceName !== pkg.name) setReceipt(null);
-  }, [pkg.name, receipt, setReceipt]);
+    if (pkg && receipt && receipt.serviceName !== pkg.name) setReceipt(null);
+  }, [pkg, receipt, setReceipt]);
+
+  if (!pkg) return <Navigate to="/layanan" replace />;
+
+  const total = estimate?.total ?? pkg.price;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

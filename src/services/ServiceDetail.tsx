@@ -13,13 +13,13 @@ export default function ServiceDetail() {
   const pkg = findPackage(id);
   const { setIsHomecare, distanceKm, setDistanceKm, classMode, setClassMode } = useServices();
 
-  if (!pkg) return <Navigate to="/layanan" replace />;
-
-  const kind = getKind(pkg);
+  const kind = pkg ? getKind(pkg) : "class";
   const meta = KIND_META[kind];
   // Homecare flag only meaningful for homecare kind; force true so estimate includes transport.
   const homecareForEstimate = kind === "homecare";
-  const { estimate } = useEstimate(pkg.id, homecareForEstimate, distanceKm);
+  const { estimate } = useEstimate(pkg?.id ?? "", homecareForEstimate, distanceKm);
+
+  if (!pkg) return <Navigate to="/layanan" replace />;
 
   return (
     <div className="space-y-6 animate-fadeIn">
