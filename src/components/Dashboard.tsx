@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CHALLENGES_DATA } from "../data/challengesData";
 import { BreastfeedingChallenge } from "../types";
 import { 
@@ -21,11 +22,7 @@ import {
   ArrowRight
 } from "lucide-react";
 
-interface DashboardProps {
-  onNavigateToTab?: (tabName: string) => void;
-}
-
-export default function Dashboard({ onNavigateToTab }: DashboardProps) {
+export default function Dashboard() {
   // Selected challenge for interactive diagnostic modal/accordion
   // Selected challenge for interactive diagnostic modal/accordion
   const LAKTASI_PROGRAMS = [
@@ -62,6 +59,8 @@ export default function Dashboard({ onNavigateToTab }: DashboardProps) {
       details: "Meliputi manajemen ASIP (penyimpanan & distribusi), pemilihan perangkat pompa yang efisien, jadwal pumping saat bekerja, dan tips menjaga suplai ASI."
     }
   ];
+
+  const navigate = useNavigate();
 
   const [activeProgram, setActiveProgram] = useState<string | null>(null);
   
@@ -196,7 +195,7 @@ export default function Dashboard({ onNavigateToTab }: DashboardProps) {
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <button
-                onClick={() => onNavigateToTab("services")}
+                onClick={() => navigate("/layanan")}
                 className="group inline-flex items-center justify-center gap-2 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold text-sm px-6 py-3.5 rounded-full shadow-md transition-all duration-200 cursor-pointer"
               >
                 Mulai Konsultasi
@@ -322,7 +321,7 @@ export default function Dashboard({ onNavigateToTab }: DashboardProps) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onNavigateToTab("services");
+                        navigate("/layanan");
                       }}
                       className="w-full inline-flex items-center justify-center gap-2 min-h-[48px] py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold rounded-full text-sm transition-colors cursor-pointer"
                     >
@@ -444,7 +443,7 @@ export default function Dashboard({ onNavigateToTab }: DashboardProps) {
                   <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                       type="button"
-                      onClick={() => onNavigateToTab("services")}
+                      onClick={() => navigate("/layanan")}
                       className="w-full text-center py-2.5 sm:py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold rounded-full text-xs transition cursor-pointer"
                     >
                       Hubungi Bidan / Dokter
@@ -540,7 +539,7 @@ export default function Dashboard({ onNavigateToTab }: DashboardProps) {
           </p>
           <div className="flex justify-center pt-1 select-none">
             <button
-              onClick={() => onNavigateToTab("services")}
+              onClick={() => navigate("/layanan")}
               className="py-2.5 px-6 bg-[#F2A07C] hover:bg-white text-white hover:text-[#3F322F] font-bold text-xs rounded-full shadow transition-all cursor-pointer flex items-center gap-1.5"
             >
               Layanan Homecare & Klinik
