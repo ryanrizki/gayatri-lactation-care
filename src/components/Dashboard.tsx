@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CHALLENGES_DATA } from "../data/challengesData";
+import { CHALLENGES_DATA, SERVICE_PACKAGES } from "../data/challengesData";
 import { BreastfeedingChallenge } from "../types";
 import { 
   Heart, 
@@ -22,30 +22,9 @@ import {
   ArrowRight
 } from "lucide-react";
 
-// Auto-rotating promo banner carousel
-const PROMO_SLIDES = [
-  {
-    image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=1400&auto=format&fit=crop&q=80",
-    title: "Konsultasi Homecare & Klinik",
-    sub: "Konselor laktasi tersertifikasi mendampingi Mama",
-    cta: "Lihat Layanan",
-    action: "services" as const,
-  },
-  {
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1400&auto=format&fit=crop&q=80",
-    title: "Kelas Digital ASI",
-    sub: "Materi & video, bisa Mama akses kapan saja",
-    cta: "Beli Kelas",
-    action: "services" as const,
-  },
-  {
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1400&auto=format&fit=crop&q=80",
-    title: "Edu Hub & Tantangan Laktasi",
-    sub: "Cek gejala dan tips mandiri, gratis untuk Mama",
-    cta: "Jelajahi Sekarang",
-    action: "program" as const,
-  },
-];
+// Auto-rotating product banner carousel (no buttons — whole slide is clickable)
+const formatIDRshort = (num: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
 
 function PromoCarousel() {
   const navigate = useNavigate();
@@ -54,53 +33,45 @@ function PromoCarousel() {
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % PROMO_SLIDES.length), 5000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % SERVICE_PACKAGES.length), 5000);
     return () => clearInterval(t);
   }, [paused]);
 
-  const go = (action: "services" | "program") =>
-    action === "services"
-      ? navigate("/layanan")
-      : document.getElementById("program-laktasi")?.scrollIntoView({ behavior: "smooth" });
-
   return (
     <section
-      className="relative h-52 sm:h-64 md:h-72 rounded-3xl overflow-hidden border border-[#F3D6E2] shadow-sm"
+      className="relative h-56 sm:h-64 md:h-72 rounded-3xl overflow-hidden border border-[#F3D6E2] shadow-sm"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
     >
-      {PROMO_SLIDES.map((s, i) => (
-        <div
-          key={s.title}
-          className={`absolute inset-0 transition-opacity duration-700 ease-out ${i === idx ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      {SERVICE_PACKAGES.map((p, i) => (
+        <button
+          key={p.id}
+          type="button"
+          onClick={() => navigate(`/layanan/${p.id}`)}
           aria-hidden={i !== idx}
+          className={`absolute inset-0 w-full text-left transition-opacity duration-700 ease-out cursor-pointer ${i === idx ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
-          <img src={s.image} alt={s.title} loading={i === 0 ? "eager" : "lazy"} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2A1C26]/75 via-[#2A1C26]/35 to-transparent" />
+          <img src={p.image} alt={p.name} loading={i === 0 ? "eager" : "lazy"} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2A1C26]/80 via-[#2A1C26]/40 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-center gap-2 p-6 sm:p-8 md:p-10 max-w-lg">
-            <h3 className="font-display font-black text-white text-xl sm:text-2xl md:text-3xl leading-tight drop-shadow">{s.title}</h3>
-            <p className="text-white/90 text-sm sm:text-base leading-snug">{s.sub}</p>
-            <button
-              type="button"
-              onClick={() => go(s.action)}
-              className="mt-2 self-start inline-flex items-center gap-2 min-h-[44px] px-5 bg-white hover:bg-[#F8B6D2] text-[#3E2A38] font-bold text-sm rounded-full shadow-md transition-colors cursor-pointer"
-            >
-              {s.cta}
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <span className="self-start text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-white/90 text-[#D85C99]">
+              {p.category === "consultation" ? "Konsultasi" : "Kelas Digital"}
+            </span>
+            <h3 className="font-display font-black text-white text-xl sm:text-2xl md:text-3xl leading-tight drop-shadow">{p.name}</h3>
+            <p className="font-display font-black text-white text-lg sm:text-xl drop-shadow">{formatIDRshort(p.price)}</p>
           </div>
-        </div>
+        </button>
       ))}
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        {PROMO_SLIDES.map((s, i) => (
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+        {SERVICE_PACKAGES.map((p, i) => (
           <button
-            key={s.title}
+            key={p.id}
             type="button"
             onClick={() => setIdx(i)}
-            aria-label={`Banner ${i + 1}`}
+            aria-label={`Produk ${i + 1}`}
             className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === idx ? "w-7 bg-white" : "w-2.5 bg-white/55 hover:bg-white/80"}`}
           />
         ))}
