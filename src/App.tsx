@@ -12,7 +12,7 @@ import ServiceDetail from "./services/ServiceDetail";
 import ServiceBooking from "./services/ServiceBooking";
 import { useAuth } from "./auth/AuthContext";
 import LoginForm from "./auth/LoginForm";
-import { Heart, CalendarCheck, Lock, UserCircle, LogOut } from "lucide-react";
+import { Heart, CalendarCheck, Lock, UserCircle, LogOut, X } from "lucide-react";
 
 export default function App() {
   const navigate = useNavigate();
@@ -100,9 +100,28 @@ export default function App() {
             )}
 
             {!user && authOpen && (
-              <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-[#EADCC9] rounded-2xl shadow-xl p-4 z-50 animate-fadeIn">
-                <LoginForm heading="Masuk ke Akun Mama" />
-              </div>
+              <>
+                {/* Scrim: dark on mobile (sheet backdrop), transparent click-away on desktop */}
+                <div
+                  className="fixed inset-0 z-40 bg-[#291E1C]/40 md:bg-transparent animate-fadeIn"
+                  onClick={() => setAuthOpen(false)}
+                  aria-hidden
+                />
+                {/* Panel: bottom sheet on mobile, anchored dropdown on desktop */}
+                <div className="fixed inset-x-0 bottom-0 z-50 bg-white border-t border-[#EADCC9] rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl animate-slideUp md:absolute md:inset-x-auto md:right-0 md:bottom-auto md:top-full md:mt-2 md:w-72 md:rounded-2xl md:border md:p-4 md:shadow-xl md:animate-fadeIn">
+                  {/* Mobile drag handle + close */}
+                  <div className="md:hidden mx-auto mb-3 h-1.5 w-12 rounded-full bg-[#EADCC9]" />
+                  <button
+                    type="button"
+                    onClick={() => setAuthOpen(false)}
+                    aria-label="Tutup"
+                    className="md:hidden absolute right-4 top-4 inline-flex items-center justify-center w-9 h-9 rounded-full text-[#7A6A65] hover:bg-[#FAF1E6] transition cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  <LoginForm heading="Masuk ke Akun Mama" />
+                </div>
+              </>
             )}
           </div>
         </div>
