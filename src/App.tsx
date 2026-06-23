@@ -3,16 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, NavLink, useNavigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import ServicesLayout from "./services/ServicesLayout";
 import ServiceList from "./services/ServiceList";
 import ServiceDetail from "./services/ServiceDetail";
 import ServiceBooking from "./services/ServiceBooking";
-import { Heart, CalendarCheck, Lock } from "lucide-react";
+import { useAuth } from "./auth/AuthContext";
+import LoginForm from "./auth/LoginForm";
+import { Heart, CalendarCheck, Lock, UserCircle, LogOut } from "lucide-react";
 
 export default function App() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
+
+  useEffect(() => { if (user) setAuthOpen(false); }, [user]);
 
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#3F322F] flex flex-col justify-between selection:bg-[#FBC2A2] selection:text-[#291E1C] p-2 md:p-4">
@@ -58,6 +65,39 @@ export default function App() {
               </NavLink>
             ))}
           </nav>
+
+          {/* Account chip */}
+          <div className="relative shrink-0">
+            {user ? (
+              <div className="flex items-center gap-1.5">
+                <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#3F322F] bg-[#FAF1E6] border border-[#EADCC9] rounded-full px-3 min-h-[36px]">
+                  <UserCircle className="w-4 h-4 text-[#E06E43]" /> {user.nama.split(" ")[0]}
+                </span>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-full text-xs font-bold text-[#7A6A65] hover:text-[#3F322F] hover:bg-white/60 transition cursor-pointer"
+                  aria-label="Keluar"
+                >
+                  <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Keluar</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthOpen((o) => !o)}
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-xs font-bold bg-[#FAF1E6] border border-[#EADCC9] text-[#3F322F] hover:bg-[#FBC2A2]/40 transition cursor-pointer"
+              >
+                <UserCircle className="w-4 h-4 text-[#E06E43]" /> Masuk
+              </button>
+            )}
+
+            {!user && authOpen && (
+              <div className="absolute right-0 mt-2 w-72 bg-white border border-[#EADCC9] rounded-2xl shadow-xl p-4 z-50 animate-fadeIn">
+                <LoginForm heading="Masuk ke Akun Mama" />
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
