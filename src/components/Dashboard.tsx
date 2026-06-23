@@ -144,7 +144,7 @@ export default function Dashboard() {
     {
       name: "Mama Rian & Baby Sean",
       city: "Yogyakarta",
-      text: "Minbee asisten laktasi AI membantu sekali menenangkan kepanikan pertamaku di minggu awal melahirkan. Pelekatan asimetris diajarkan dengan petunjuk sangat jelas dan sabar. Sangat bersyukur ada program seefektif ini yang mendampingi Mama setiap saat.",
+      text: "Panduan edukasi gejala mandiri Gayatri membantu sekali menenangkan kepanikan pertamaku di minggu awal melahirkan. Teknik pelekatan asimetris dijelaskan dengan petunjuk yang sangat jelas dan sabar. Sangat bersyukur ada program seefektif ini yang mendampingi Mama setiap saat.",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
       pill: "Edukasi Gejala Mandiri"
     }
@@ -173,8 +173,7 @@ export default function Dashboard() {
           {/* Left — message */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
             <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur border border-[#EADCC9] text-[#7A6A65] text-[10px] font-bold uppercase tracking-[0.18em] px-3.5 py-1.5 rounded-full shadow-sm">
-              <span className="text-sm leading-none">🐝</span>
-              Didampingi Minbee &amp; Konsultan Laktasi
+              Didampingi Konsultan Laktasi Tersertifikasi
             </span>
 
             <h1 className="font-display font-black text-[#3F322F] leading-[1.05] tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-[3.4rem]">
@@ -233,17 +232,6 @@ export default function Dashboard() {
                   className="w-full h-[360px] sm:h-[440px] object-cover"
                 />
                 <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#291E1C]/25 via-transparent to-transparent" />
-              </div>
-
-              {/* Floating: Minbee status */}
-              <div className="absolute top-5 -left-2 sm:-left-5 bg-white/95 backdrop-blur border border-[#EADCC9] rounded-2xl px-3.5 py-2.5 shadow-lg flex items-center gap-2.5 animate-float">
-                <div className="w-9 h-9 bg-[#FAF1E6] rounded-full flex items-center justify-center text-lg border border-[#EADCC9] shrink-0">🐝</div>
-                <div className="leading-tight text-left">
-                  <p className="text-[11px] font-display font-bold text-[#3F322F]">Minbee</p>
-                  <p className="text-[9px] font-semibold text-[#7BA86F] inline-flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#7BA86F]" /> Aktif 24/7
-                  </p>
-                </div>
               </div>
 
               {/* Floating: rating + reach */}
