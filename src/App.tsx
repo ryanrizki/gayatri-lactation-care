@@ -33,7 +33,7 @@ export default function App() {
               <span className="text-lg md:text-2xl font-display font-black tracking-tight leading-none text-[#3F322F]">
                 Gayatri<span className="text-[#F2A07C]">.</span>
               </span>
-              <span className="hidden sm:inline text-[8px] uppercase tracking-[0.25em] mt-1 font-bold text-[#937F73]">
+              <span className="inline text-[8px] sm:text-[8px] uppercase tracking-[0.25em] mt-0.5 sm:mt-1 font-bold text-[#937F73]">
                 Pusat Laktasi
               </span>
             </div>
