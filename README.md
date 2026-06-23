@@ -73,8 +73,3 @@ src/
   types.ts
 server.ts               # Express: API Gemini + estimator
 ```
-
-## API
-
-- `POST /api/chat` — asisten laktasi Minbee (Gemini). Fallback bila `GEMINI_API_KEY` kosong.
-- `POST /api/estimator` — kalkulasi tarif transparan (`packageId`, `locationDistance`, `isHomecare`).
