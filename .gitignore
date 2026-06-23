@@ -1,8 +1,33 @@
+# Dependencies
 node_modules/
+
+# Build output
 build/
 dist/
+*.tsbuildinfo
+
+# Caches
 coverage/
-.DS_Store
-*.log
+.cache/
+.vite/
+node_modules/.vite/
+
+# Env (keep the example)
 .env*
 !.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
