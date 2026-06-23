@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { Routes, Route, Navigate, NavLink, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, NavLink, useNavigate, useLocation } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import ServicesLayout from "./services/ServicesLayout";
 import ServiceList from "./services/ServiceList";
@@ -20,6 +20,10 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => { if (user) setAuthOpen(false); }, [user]);
+
+  // Scroll to top on every route change (react-router keeps scroll otherwise)
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [pathname]);
 
   const navItems = [
     { to: "/", label: "Edu Hub", Icon: Heart, end: true },
