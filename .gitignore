@@ -31,3 +31,7 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Local agent artifacts
+.claude/skills/rework-section/
+docs/superpowers/
