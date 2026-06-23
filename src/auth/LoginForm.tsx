@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#EADCC9] focus:border-[#F2A07C] rounded-2xl focus:outline-none bg-[#FFFDFB] text-[#3F322F]";
 
 /** Mock login — any non-empty input logs the user in. Temporary, no backend. */
-export default function LoginForm({ heading }: { heading?: string }) {
+export default function LoginForm({ heading, body }: { heading?: string; body?: string }) {
   const { login } = useAuth();
   const [nama, setNama] = useState("");
   const [kontak, setKontak] = useState("");
@@ -21,7 +21,7 @@ export default function LoginForm({ heading }: { heading?: string }) {
     <form onSubmit={submit} className="space-y-4">
       {heading && <h3 className="text-lg font-display font-bold text-[#3F322F]">{heading}</h3>}
       <p className="text-sm text-[#5C453C] leading-relaxed">
-        Masuk dulu untuk membeli kelas ya, Ma. Materi &amp; video tersimpan di akun Mama.
+        {body ?? "Masuk ke akun Gayatri Mama untuk lanjut ya, Ma. 🌸"}
       </p>
       {warn && <p className="text-sm text-red-600">Mohon isi nama dan kontak ya, Ma. 🌸</p>}
       <div>

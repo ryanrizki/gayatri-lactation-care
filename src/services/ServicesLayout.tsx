@@ -29,8 +29,6 @@ export interface ServicesCtx {
   setIsHomecare: (v: boolean) => void;
   distanceKm: number;
   setDistanceKm: (v: number) => void;
-  classMode: "online" | "offline";
-  setClassMode: (v: "online" | "offline") => void;
   draft: BookingDraft;
   setDraft: React.Dispatch<React.SetStateAction<BookingDraft>>;
   receipt: Receipt | null;
@@ -46,13 +44,12 @@ const EMPTY_DRAFT: BookingDraft = { name: "", phone: "", email: "", date: "", ti
 export default function ServicesLayout() {
   const [isHomecare, setIsHomecare] = useState(true);
   const [distanceKm, setDistanceKm] = useState(4);
-  const [classMode, setClassMode] = useState<"online" | "offline">("online");
   const [draft, setDraft] = useState<BookingDraft>(EMPTY_DRAFT);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
   const ctx: ServicesCtx = {
     isHomecare, setIsHomecare, distanceKm, setDistanceKm,
-    classMode, setClassMode, draft, setDraft, receipt, setReceipt,
+    draft, setDraft, receipt, setReceipt,
   };
 
   const { pathname } = useLocation();

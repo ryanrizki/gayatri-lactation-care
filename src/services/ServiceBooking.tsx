@@ -155,7 +155,7 @@ export default function ServiceBooking() {
           ) : isDigital ? (
             /* ===== KELAS: login gate -> confirm purchase ===== */
             !user ? (
-              <LoginForm heading="Masuk untuk membeli kelas" />
+              <LoginForm heading="Masuk untuk membeli kelas" body="Masuk dulu untuk membeli kelas ya, Ma. Materi & video tersimpan di akun Mama." />
             ) : (
               <div className="space-y-5">
                 <div>
