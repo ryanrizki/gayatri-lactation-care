@@ -98,31 +98,6 @@ export default function App() {
                 <UserCircle className="w-5 h-5 text-[#E06E43]" /> Masuk
               </button>
             )}
-
-            {!user && authOpen && (
-              <>
-                {/* Scrim: dark on mobile (sheet backdrop), transparent click-away on desktop */}
-                <div
-                  className="fixed inset-0 z-40 bg-[#291E1C]/40 md:bg-transparent animate-fadeIn"
-                  onClick={() => setAuthOpen(false)}
-                  aria-hidden
-                />
-                {/* Panel: bottom sheet on mobile, anchored dropdown on desktop */}
-                <div className="fixed inset-x-0 bottom-0 z-50 bg-white border-t border-[#EADCC9] rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl animate-slideUp md:absolute md:inset-x-auto md:right-0 md:bottom-auto md:top-full md:mt-2 md:w-72 md:rounded-2xl md:border md:p-4 md:shadow-xl md:animate-fadeIn">
-                  {/* Mobile drag handle + close */}
-                  <div className="md:hidden mx-auto mb-3 h-1.5 w-12 rounded-full bg-[#EADCC9]" />
-                  <button
-                    type="button"
-                    onClick={() => setAuthOpen(false)}
-                    aria-label="Tutup"
-                    className="md:hidden absolute right-4 top-4 inline-flex items-center justify-center w-9 h-9 rounded-full text-[#7A6A65] hover:bg-[#FAF1E6] transition cursor-pointer"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                  <LoginForm heading="Masuk ke Akun Mama" />
-                </div>
-              </>
-            )}
           </div>
         </div>
 
@@ -227,6 +202,31 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Login overlay — rendered at root (outside the backdrop-blur header) so `fixed` anchors to the viewport */}
+      {!user && authOpen && (
+        <>
+          {/* Scrim: dark on mobile, transparent click-away on desktop */}
+          <div
+            className="fixed inset-0 z-[100] bg-[#291E1C]/40 md:bg-transparent animate-fadeIn"
+            onClick={() => setAuthOpen(false)}
+            aria-hidden
+          />
+          {/* Panel: bottom sheet on mobile, top-right card on desktop */}
+          <div className="fixed inset-x-0 bottom-0 z-[110] bg-white border-t border-[#EADCC9] rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl animate-slideUp md:inset-x-auto md:bottom-auto md:right-4 md:top-24 md:w-72 md:rounded-2xl md:border md:p-4 md:shadow-xl md:animate-fadeIn">
+            <div className="md:hidden mx-auto mb-3 h-1.5 w-12 rounded-full bg-[#EADCC9]" />
+            <button
+              type="button"
+              onClick={() => setAuthOpen(false)}
+              aria-label="Tutup"
+              className="md:hidden absolute right-4 top-4 inline-flex items-center justify-center w-9 h-9 rounded-full text-[#7A6A65] hover:bg-[#FAF1E6] transition cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <LoginForm heading="Masuk ke Akun Mama" />
+          </div>
+        </>
+      )}
 
     </div>
   );
