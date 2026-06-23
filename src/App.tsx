@@ -34,7 +34,7 @@ export default function App() {
                 Gayatri<span className="text-[#F2A07C]">.</span>
               </span>
               <span className="hidden sm:inline text-[8px] uppercase tracking-[0.25em] mt-1 font-bold text-[#937F73]">
-                Layanan Laktasi
+                Pusat Laktasi
               </span>
             </div>
           </div>
