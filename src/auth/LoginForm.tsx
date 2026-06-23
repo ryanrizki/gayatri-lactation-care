@@ -1,0 +1,43 @@
+import React, { useState } from "react";
+import { User, LogIn } from "lucide-react";
+import { useAuth } from "./AuthContext";
+
+const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#EADCC9] focus:border-[#F2A07C] rounded-2xl focus:outline-none bg-[#FFFDFB] text-[#3F322F]";
+
+/** Mock login — any non-empty input logs the user in. Temporary, no backend. */
+export default function LoginForm({ heading }: { heading?: string }) {
+  const { login } = useAuth();
+  const [nama, setNama] = useState("");
+  const [kontak, setKontak] = useState("");
+  const [warn, setWarn] = useState(false);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nama.trim() || !kontak.trim()) { setWarn(true); return; }
+    login(nama.trim(), kontak.trim());
+  };
+
+  return (
+    <form onSubmit={submit} className="space-y-4">
+      {heading && <h3 className="text-lg font-display font-bold text-[#3F322F]">{heading}</h3>}
+      <p className="text-sm text-[#5C453C] leading-relaxed">
+        Masuk dulu untuk membeli kelas ya, Ma. Materi &amp; video tersimpan di akun Mama.
+      </p>
+      {warn && <p className="text-sm text-red-600">Mohon isi nama dan kontak ya, Ma. 🌸</p>}
+      <div>
+        <label className="text-sm font-bold text-[#5C453C] block mb-1.5">Nama Mama</label>
+        <div className="relative">
+          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#937F73]/70" />
+          <input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Contoh: Rania Kirana" className={inputClass + " pl-10"} />
+        </div>
+      </div>
+      <div>
+        <label className="text-sm font-bold text-[#5C453C] block mb-1.5">WhatsApp / Email</label>
+        <input value={kontak} onChange={(e) => setKontak(e.target.value)} placeholder="0812xxxx atau mama@email.com" className={inputClass} />
+      </div>
+      <button type="submit" className="w-full min-h-[48px] py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold text-sm rounded-full transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md">
+        <LogIn className="w-5 h-5" /> Masuk
+      </button>
+    </form>
+  );
+}
