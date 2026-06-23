@@ -202,6 +202,31 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* 1b. Promo banners */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { Icon: Activity, title: "Homecare & Klinik", sub: "Konsultasi didampingi konselor tersertifikasi", onClick: () => navigate("/layanan") },
+          { Icon: Sparkles, title: "Kelas Digital ASI", sub: "Materi & video, belajar dari rumah Mama", onClick: () => navigate("/layanan") },
+          { Icon: MessageSquare, title: "Edu Hub & Tantangan", sub: "Cek gejala laktasi & tips mandiri", onClick: () => document.getElementById("program-laktasi")?.scrollIntoView({ behavior: "smooth" }) },
+        ].map(({ Icon, title, sub, onClick }) => (
+          <button
+            key={title}
+            type="button"
+            onClick={onClick}
+            className="group text-left flex items-center gap-4 p-5 rounded-3xl border border-[#F3D6E2] bg-gradient-to-br from-[#FCE9F1] to-[#F8B6D2]/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-pointer min-h-[44px]"
+          >
+            <div className="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#F8B6D2] to-[#E97FB1] flex items-center justify-center shadow-sm">
+              <Icon className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display font-bold text-base text-[#3E2A38] leading-snug">{title}</h3>
+              <p className="text-sm text-[#5E4455] leading-snug mt-0.5">{sub}</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-[#E97FB1] shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </button>
+        ))}
+      </section>
+
       {/* 2. Interactive Programs Directory */}
       <section id="program-laktasi" className="space-y-7 md:space-y-9">
         <div className="text-center max-w-xl mx-auto space-y-3">
