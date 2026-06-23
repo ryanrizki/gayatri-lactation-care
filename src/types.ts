@@ -73,6 +73,12 @@ export interface BreastfeedingChallenge {
 }
 
 // Types for Consultation Estimator
+export interface ServiceMaterial {
+  title: string;
+  type: "video" | "pdf";
+  preview?: boolean; // shown unlocked as a free sample
+}
+
 export interface ServicePackage {
   id: string;
   name: string;
@@ -81,4 +87,5 @@ export interface ServicePackage {
   description: string;
   features: string[];
   image: string;
+  materials?: ServiceMaterial[]; // digital deliverables (Kelas)
 }
