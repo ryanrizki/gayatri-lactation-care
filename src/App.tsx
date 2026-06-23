@@ -21,47 +21,50 @@ export default function App() {
 
   useEffect(() => { if (user) setAuthOpen(false); }, [user]);
 
+  const navItems = [
+    { to: "/", label: "Edu Hub", Icon: Heart, end: true },
+    { to: "/layanan", label: "Klinik & Homecare", Icon: CalendarCheck, end: false },
+  ];
+
   return (
     <div className="min-h-screen bg-[#FAF6F0] text-[#3F322F] flex flex-col justify-between selection:bg-[#FBC2A2] selection:text-[#291E1C] p-2 md:p-4">
       
       {/* 1. Header/Navigation Bar with responsive compact rounded styling */}
       <header className="sticky top-2 md:top-4 z-50 bg-white/95 backdrop-blur-md border border-[#EADCC9]/80 rounded-2xl md:rounded-3xl p-2.5 md:p-4 shrink-0 shadow-sm max-w-7xl mx-auto w-full mb-4 md:mb-6">
-        <div className="flex items-center justify-between gap-2">
-          
+        {/* Row 1: brand + (desktop nav) + account */}
+        <div className="flex items-center justify-between gap-3">
+
           {/* Brand Logo with elegant warm display serif typography */}
           <div
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 md:gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-2.5 cursor-pointer group shrink-0"
           >
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#FAF1E6] rounded-full flex items-center justify-center text-base md:text-xl shadow-inner border border-[#EADCC9]">
+            <div className="w-9 h-9 md:w-10 md:h-10 bg-[#FAF1E6] rounded-full flex items-center justify-center text-lg md:text-xl shadow-inner border border-[#EADCC9]">
               🌸
             </div>
             <div className="flex flex-col">
               <span className="text-lg md:text-2xl font-display font-black tracking-tight leading-none text-[#3F322F]">
                 Gayatri<span className="text-[#F2A07C]">.</span>
               </span>
-              <span className="inline text-[8px] sm:text-[8px] uppercase tracking-[0.25em] mt-0.5 sm:mt-1 font-bold text-[#937F73]">
+              <span className="text-[8px] uppercase tracking-[0.25em] mt-0.5 font-bold text-[#937F73]">
                 Pusat Laktasi
               </span>
             </div>
           </div>
 
-          {/* Tab Menu styled with responsive soft interactive pills */}
-          <nav className="flex items-center gap-1 sm:gap-1.5 bg-[#FAF6F0] p-1 rounded-xl sm:rounded-2xl border border-[#EADCC9]/55">
-            {[
-              { to: "/", label: "Edu Hub", icon: <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> },
-              { to: "/layanan", label: "Klinik & Homecare", icon: <CalendarCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> }
-            ].map((tab) => (
+          {/* Desktop inline nav (hidden on mobile) */}
+          <nav className="hidden md:flex items-center gap-1.5 bg-[#FAF6F0] p-1 rounded-2xl border border-[#EADCC9]/55">
+            {navItems.map(({ to, label, Icon, end }) => (
               <NavLink
-                key={tab.to}
-                to={tab.to}
-                end={tab.to === "/"}
-                className={({ isActive }) => `px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-xs font-sans font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+                key={to}
+                to={to}
+                end={end}
+                className={({ isActive }) => `px-4 py-2 rounded-xl text-xs font-sans font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
                   isActive ? "bg-[#3F322F] text-white shadow-sm font-bold" : "text-[#7A6A65] hover:text-[#3F322F] hover:bg-white/60"
                 }`}
               >
-                {tab.icon}
-                <span>{tab.label}</span>
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{label}</span>
               </NavLink>
             ))}
           </nav>
@@ -70,7 +73,7 @@ export default function App() {
           <div className="relative shrink-0">
             {user ? (
               <div className="flex items-center gap-1.5">
-                <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#3F322F] bg-[#FAF1E6] border border-[#EADCC9] rounded-full px-3 min-h-[36px]">
+                <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#3F322F] bg-[#FAF1E6] border border-[#EADCC9] rounded-full px-3 min-h-[40px]">
                   <UserCircle className="w-4 h-4 text-[#E06E43]" /> {user.nama.split(" ")[0]}
                 </span>
                 <button
@@ -86,19 +89,36 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setAuthOpen((o) => !o)}
-                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-xs font-bold bg-[#FAF1E6] border border-[#EADCC9] text-[#3F322F] hover:bg-[#FBC2A2]/40 transition cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-sm font-bold bg-[#FAF1E6] border border-[#EADCC9] text-[#3F322F] hover:bg-[#FBC2A2]/40 transition cursor-pointer"
               >
-                <UserCircle className="w-4 h-4 text-[#E06E43]" /> Masuk
+                <UserCircle className="w-5 h-5 text-[#E06E43]" /> Masuk
               </button>
             )}
 
             {!user && authOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white border border-[#EADCC9] rounded-2xl shadow-xl p-4 z-50 animate-fadeIn">
+              <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-[#EADCC9] rounded-2xl shadow-xl p-4 z-50 animate-fadeIn">
                 <LoginForm heading="Masuk ke Akun Mama" />
               </div>
             )}
           </div>
         </div>
+
+        {/* Row 2: full-width segmented nav (mobile only) */}
+        <nav className="grid grid-cols-2 gap-2 mt-2.5 md:hidden">
+          {navItems.map(({ to, label, Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) => `min-h-[48px] px-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-center leading-tight cursor-pointer border ${
+                isActive ? "bg-[#3F322F] text-white border-[#3F322F] shadow-sm font-bold" : "bg-[#FAF6F0] text-[#5C453C] border-[#EADCC9]/70 hover:bg-white"
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
       </header>
 
       {/* 2. Main Content Container Area */}
