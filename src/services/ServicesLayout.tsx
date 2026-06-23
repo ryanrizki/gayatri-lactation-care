@@ -17,7 +17,7 @@ export interface Receipt {
   email?: string;
   serviceName: string;
   kind: string;
-  dateLabel: string;   // date picked, or fixed webinar event date
+  dateLabel: string;   // date picked, or "Akses digital" for kelas
   time: string;
   methodLabel: string;
   distanceKm?: number;
@@ -65,9 +65,9 @@ export default function ServicesLayout() {
 
   const Stepper = () => {
     const items = [
-      { n: 1, label: "Pilih Layanan", short: "Layanan", to: "/layanan", enabled: true },
-      { n: 2, label: "Konfigurasi", short: "Detail", to: selectedId ? `/layanan/${selectedId}` : "", enabled: !!selectedId },
-      { n: 3, label: "Reservasi", short: "Booking", to: selectedId ? `/layanan/${selectedId}/booking` : "", enabled: !!selectedId },
+      { n: 1, label: "Pilih", short: "Pilih", to: "/layanan", enabled: true },
+      { n: 2, label: "Detail", short: "Detail", to: selectedId ? `/layanan/${selectedId}` : "", enabled: !!selectedId },
+      { n: 3, label: "Pesan", short: "Pesan", to: selectedId ? `/layanan/${selectedId}/booking` : "", enabled: !!selectedId },
     ];
     return (
       <div className="flex justify-center items-center gap-1 sm:gap-2 max-w-xl mx-auto py-2 px-2 sm:py-3 sm:px-4 bg-white/60 backdrop-blur rounded-2xl border border-[#EADCC9]/60 text-sm font-bold text-[#7A6A65] shadow-sm">
