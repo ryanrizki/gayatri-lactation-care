@@ -5,28 +5,28 @@
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", serif;
   --font-mono: "JetBrains Mono", monospace;
-  --color-brand-zinc-50: #faf6f0;
-  --color-brand-zinc-100: #f5eedf;
-  --color-brand-zinc-200: #eadcc9;
-  --color-brand-zinc-300: #decbbc;
-  --color-brand-zinc-400: #bfa899;
-  --color-brand-zinc-500: #937f73;
-  --color-brand-zinc-900: #3f322f;
-  --color-brand-zinc-950: #291e1c;
-  --color-brand-amber-400: #fbc2a2; /* Soft warm pastel peach */
-  --color-brand-amber-500: #f2a07c; /* Warm apricot/terracotta pastel */
+  --color-brand-zinc-50: #FFF6FA;
+  --color-brand-zinc-100: #FCEAF1;
+  --color-brand-zinc-200: #F3D6E2;
+  --color-brand-zinc-300: #E9CBD8;
+  --color-brand-zinc-400: #C3A6B5;
+  --color-brand-zinc-500: #9C8593;
+  --color-brand-zinc-900: #3E2A38;
+  --color-brand-zinc-950: #2A1C26;
+  --color-brand-amber-400: #F8B6D2; /* Soft warm pastel peach */
+  --color-brand-amber-500: #E97FB1; /* Warm apricot/terracotta pastel */
 }
 
 body {
-  background-color: #FAF6F0; /* Warm linen soft background */
-  color: #3F322F; /* Soft cocoa/chocolate text instead of raw black */
+  background-color: #FFF6FA; /* Warm linen soft background */
+  color: #3E2A38; /* Soft cocoa/chocolate text instead of raw black */
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background-color: #FBC2A2;
-  color: #291E1C;
+  background-color: #F8B6D2;
+  color: #2A1C26;
 }
 
 /* Custom animation for fading modules in */
@@ -75,7 +75,7 @@ body {
 
 /* Rounded, cozy cards and premium soft elements */
 .artistic-btn-solid {
-  background-color: #3F322F;
+  background-color: #3E2A38;
   color: #ffffff;
   font-family: var(--font-sans);
   font-weight: 700;
@@ -83,27 +83,27 @@ body {
   padding: 0.85rem 1.75rem;
   font-size: 0.8rem;
   transition: all 0.2s ease-in-out;
-  border: 1px solid #3F322F;
+  border: 1px solid #3E2A38;
   box-shadow: 0 4px 12px rgba(63, 50, 47, 0.1);
 }
 
 .artistic-btn-solid:hover {
-  background-color: #f2a07c;
-  border-color: #f2a07c;
+  background-color: #E97FB1;
+  border-color: #E97FB1;
   color: #ffffff;
   box-shadow: 0 6px 16px rgba(242, 160, 124, 0.2);
 }
 
 .artistic-card {
   background-color: #ffffff;
-  border: 1px solid #EADCC9;
+  border: 1px solid #F3D6E2;
   border-radius: 1.5rem; /* Cozy soft rounded corners */
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 8px 24px rgba(229, 219, 209, 0.25);
 }
 
 .artistic-card:hover {
-  border-color: #f2a07c;
+  border-color: #E97FB1;
   box-shadow: 0 12px 32px rgba(242, 160, 124, 0.15);
 }
 

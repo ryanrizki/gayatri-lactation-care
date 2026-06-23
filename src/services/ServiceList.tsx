@@ -9,11 +9,11 @@ export default function ServiceList() {
   const navigate = useNavigate();
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="flex items-center justify-between gap-3 border-b border-[#EADCC9]/50 pb-3">
-        <h2 className="text-base sm:text-lg font-display font-bold text-[#3F322F]">
+      <div className="flex items-center justify-between gap-3 border-b border-[#F3D6E2]/50 pb-3">
+        <h2 className="text-base sm:text-lg font-display font-bold text-[#3E2A38]">
           Pilih Layanan Terbaik Untuk Mama
         </h2>
-        <span className="text-sm font-semibold text-[#7A6A65] shrink-0">
+        <span className="text-sm font-semibold text-[#836E7A] shrink-0">
           {SERVICE_PACKAGES.length} Program
         </span>
       </div>
@@ -22,12 +22,12 @@ export default function ServiceList() {
         {SERVICE_PACKAGES.map((pkg) => {
           const catLabel = pkg.category === "consultation" ? "Konsultasi" : "Kelas";
           const catClass = pkg.category === "consultation"
-            ? "bg-white/90 text-[#7A6A65] border-[#EADCC9]"
-            : "bg-[#FFF2EB] text-[#E06E43] border-[#FFD3BE]";
+            ? "bg-white/90 text-[#836E7A] border-[#F3D6E2]"
+            : "bg-[#FDEAF2] text-[#D85C99] border-[#F8C9DD]";
           return (
             <div
               key={pkg.id}
-              className="border border-[#EADCC9] p-3 sm:p-5 flex flex-col justify-between transition-all duration-300 rounded-3xl bg-white hover:-translate-y-0.5 hover:border-[#FBC2A2] hover:shadow-md"
+              className="border border-[#F3D6E2] p-3 sm:p-5 flex flex-col justify-between transition-all duration-300 rounded-3xl bg-white hover:-translate-y-0.5 hover:border-[#F8B6D2] hover:shadow-md"
             >
               <div className="space-y-3">
                 <div className="relative">
@@ -37,11 +37,11 @@ export default function ServiceList() {
                   </span>
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="text-base font-display font-bold text-[#3F322F] leading-snug line-clamp-2">{pkg.name}</h3>
-                  <p className="text-lg font-display font-black text-[#E06E43]">{formatIDR(pkg.price)}</p>
-                  <p className="text-sm text-[#5C453C] leading-relaxed line-clamp-2">{pkg.description}</p>
+                  <h3 className="text-base font-display font-bold text-[#3E2A38] leading-snug line-clamp-2">{pkg.name}</h3>
+                  <p className="text-lg font-display font-black text-[#D85C99]">{formatIDR(pkg.price)}</p>
+                  <p className="text-sm text-[#5E4455] leading-relaxed line-clamp-2">{pkg.description}</p>
                 </div>
-                <ul className="space-y-1.5 text-sm text-[#5C453C]">
+                <ul className="space-y-1.5 text-sm text-[#5E4455]">
                   {pkg.features.slice(0, 2).map((feat, idx) => (
                     <li key={idx} className="flex gap-2 items-start">
                       <CheckCircle className="w-4 h-4 text-[#7BA86F] shrink-0 mt-0.5" />
@@ -49,7 +49,7 @@ export default function ServiceList() {
                     </li>
                   ))}
                   {pkg.features.length > 2 && (
-                    <li className="text-sm text-[#937F73] italic pl-6">+{pkg.features.length - 2} manfaat lainnya</li>
+                    <li className="text-sm text-[#9C8593] italic pl-6">+{pkg.features.length - 2} manfaat lainnya</li>
                   )}
                 </ul>
               </div>
@@ -57,7 +57,7 @@ export default function ServiceList() {
                 <button
                   type="button"
                   onClick={() => navigate(`/layanan/${pkg.id}`)}
-                  className="w-full min-h-[44px] py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white rounded-full text-sm font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full min-h-[44px] py-3 bg-[#3E2A38] hover:bg-[#E97FB1] text-white rounded-full text-sm font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>Lihat Detail</span>
                   <ArrowRight className="w-4 h-4" />

@@ -10,8 +10,8 @@ import LoginForm from "../auth/LoginForm";
 const formatIDR = (num: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
 
-const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#EADCC9] focus:border-[#F2A07C] rounded-2xl focus:outline-none bg-[#FFFDFB] text-[#3F322F]";
-const labelClass = "text-sm font-bold text-[#5C453C] block mb-1.5";
+const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#F3D6E2] focus:border-[#E97FB1] rounded-2xl focus:outline-none bg-[#FFFCFD] text-[#3E2A38]";
+const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";
 
 export default function ServiceBooking() {
   const { id } = useParams();
@@ -82,34 +82,34 @@ export default function ServiceBooking() {
     <div className="space-y-6 animate-fadeIn">
       <button
         onClick={() => navigate(`/layanan/${pkg.id}`)}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A6A65] hover:text-[#3F322F] transition cursor-pointer select-none"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[#836E7A] hover:text-[#3E2A38] transition cursor-pointer select-none"
       >
         <ArrowLeft className="w-4 h-4" /> Kembali ke Detail Layanan
       </button>
 
-      <div className="max-w-4xl mx-auto bg-white rounded-[28px] border border-[#EADCC9] overflow-hidden grid grid-cols-1 md:grid-cols-12 shadow-sm">
+      <div className="max-w-4xl mx-auto bg-white rounded-[28px] border border-[#F3D6E2] overflow-hidden grid grid-cols-1 md:grid-cols-12 shadow-sm">
         {/* Summary */}
-        <div className="md:col-span-5 p-5 sm:p-6 bg-[#FAF8F5] border-b md:border-b-0 md:border-r border-[#EADCC9]/50 flex flex-col justify-between">
+        <div className="md:col-span-5 p-5 sm:p-6 bg-[#FEF7FB] border-b md:border-b-0 md:border-r border-[#F3D6E2]/50 flex flex-col justify-between">
           <div className="space-y-5">
             <div>
-              <span className="text-sm font-bold text-[#E06E43] uppercase tracking-wide block">Langkah Akhir</span>
-              <h3 className="text-lg font-display font-bold text-[#3F322F]">Ringkasan Pilihan</h3>
+              <span className="text-sm font-bold text-[#D85C99] uppercase tracking-wide block">Langkah Akhir</span>
+              <h3 className="text-lg font-display font-bold text-[#3E2A38]">Ringkasan Pilihan</h3>
             </div>
-            <div className="p-4 bg-white border border-[#EADCC9]/50 rounded-2xl space-y-4">
+            <div className="p-4 bg-white border border-[#F3D6E2]/50 rounded-2xl space-y-4">
               <div>
-                <span className="text-xs font-bold text-[#937F73] block uppercase tracking-wide">Program</span>
-                <span className="text-base font-bold text-[#3F322F] block leading-snug mt-0.5">{pkg.name}</span>
+                <span className="text-xs font-bold text-[#9C8593] block uppercase tracking-wide">Program</span>
+                <span className="text-base font-bold text-[#3E2A38] block leading-snug mt-0.5">{pkg.name}</span>
               </div>
               <div>
-                <span className="text-xs font-bold text-[#937F73] block uppercase tracking-wide">Metode</span>
-                <span className="text-base font-bold text-[#3F322F] block mt-0.5">
+                <span className="text-xs font-bold text-[#9C8593] block uppercase tracking-wide">Metode</span>
+                <span className="text-base font-bold text-[#3E2A38] block mt-0.5">
                   {kind === "homecare" ? `${meta.methodLabel} (${distanceKm} km)` : meta.methodLabel}
                 </span>
               </div>
-              <hr className="border-[#EADCC9]/50 border-dashed" />
+              <hr className="border-[#F3D6E2]/50 border-dashed" />
               <div className="flex justify-between items-center text-base font-bold">
-                <span className="text-[#5C453C]">Total</span>
-                <span className="text-[#E06E43] bg-[#FFF2EB] px-2.5 py-1 rounded-full">{formatIDR(total)}</span>
+                <span className="text-[#5E4455]">Total</span>
+                <span className="text-[#D85C99] bg-[#FDEAF2] px-2.5 py-1 rounded-full">{formatIDR(total)}</span>
               </div>
             </div>
             <div className="p-3.5 bg-sky-50 border border-sky-100 rounded-2xl flex items-start gap-2 text-sm text-sky-800 leading-snug">
@@ -127,28 +127,28 @@ export default function ServiceBooking() {
             <div className="space-y-6 text-center animate-fadeIn py-2">
               <div className="w-16 h-16 bg-[#D1E1CE] text-[#4D6B4E] border border-[#CCDDC8] flex items-center justify-center rounded-full mx-auto text-2xl font-black">✓</div>
               <div className="space-y-1">
-                <h3 className="text-lg font-display font-bold text-[#3F322F]">{isDigital ? "Pembelian Berhasil!" : "Pendaftaran Berhasil!"}</h3>
-                <p className="text-sm text-[#5C453C]">Kode: <span className="font-bold text-[#3F322F]">{receipt.id}</span></p>
+                <h3 className="text-lg font-display font-bold text-[#3E2A38]">{isDigital ? "Pembelian Berhasil!" : "Pendaftaran Berhasil!"}</h3>
+                <p className="text-sm text-[#5E4455]">Kode: <span className="font-bold text-[#3E2A38]">{receipt.id}</span></p>
               </div>
-              <div className="bg-[#FAF8F5] border border-[#EADCC9]/55 text-left p-5 rounded-2xl text-sm text-[#5C453C] leading-relaxed space-y-3">
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Pembeli" : "Pendaftar"}</span><span className="font-bold text-[#3F322F]">{receipt.name}</span> ({receipt.phone})</p>
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Kelas" : "Layanan"}</span><span className="font-bold text-[#3F322F]">{receipt.serviceName}</span></p>
+              <div className="bg-[#FEF7FB] border border-[#F3D6E2]/55 text-left p-5 rounded-2xl text-sm text-[#5E4455] leading-relaxed space-y-3">
+                <p><span className="text-[#9C8593] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Pembeli" : "Pendaftar"}</span><span className="font-bold text-[#3E2A38]">{receipt.name}</span> ({receipt.phone})</p>
+                <p><span className="text-[#9C8593] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Kelas" : "Layanan"}</span><span className="font-bold text-[#3E2A38]">{receipt.serviceName}</span></p>
                 {!isDigital && (
                   <>
-                    <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Jadwal</span><span className="font-bold text-[#3F322F]">{receipt.dateLabel} · {receipt.time} WIB</span></p>
-                    <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Metode</span><span className="font-bold text-[#3F322F]">{receipt.methodLabel}</span></p>
+                    <p><span className="text-[#9C8593] font-bold block uppercase text-xs tracking-wide">Jadwal</span><span className="font-bold text-[#3E2A38]">{receipt.dateLabel} · {receipt.time} WIB</span></p>
+                    <p><span className="text-[#9C8593] font-bold block uppercase text-xs tracking-wide">Metode</span><span className="font-bold text-[#3E2A38]">{receipt.methodLabel}</span></p>
                   </>
                 )}
-                <div className="border-t border-dashed border-[#EADCC9] pt-2.5 flex justify-between font-bold text-base text-[#3F322F]">
-                  <span>Total</span><span className="text-[#E06E43] font-black">{formatIDR(receipt.total)}</span>
+                <div className="border-t border-dashed border-[#F3D6E2] pt-2.5 flex justify-between font-bold text-base text-[#3E2A38]">
+                  <span>Total</span><span className="text-[#D85C99] font-black">{formatIDR(receipt.total)}</span>
                 </div>
               </div>
-              <p className="text-sm text-[#937F73] leading-relaxed max-w-md mx-auto">
+              <p className="text-sm text-[#9C8593] leading-relaxed max-w-md mx-auto">
                 {isDigital
                   ? "Materi & video akan tersedia di halaman akun Gayatri Mama. Tim kami akan mengaktifkannya segera ya, Ma!"
                   : "Admin Gayatri menghubungi Mama via WhatsApp maksimal 1×24 jam untuk konfirmasi. Terima kasih ya, Ma!"}
               </p>
-              <button type="button" onClick={resetAll} className="w-full min-h-[48px] py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold text-sm rounded-full cursor-pointer transition-colors shadow-md">
+              <button type="button" onClick={resetAll} className="w-full min-h-[48px] py-3 bg-[#3E2A38] hover:bg-[#E97FB1] text-white font-bold text-sm rounded-full cursor-pointer transition-colors shadow-md">
                 Kembali ke Daftar Layanan
               </button>
             </div>
@@ -159,17 +159,17 @@ export default function ServiceBooking() {
             ) : (
               <div className="space-y-5">
                 <div>
-                  <span className="text-xs font-bold text-[#E06E43] bg-[#FFF2EB] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Konfirmasi Pembelian</span>
-                  <h3 className="text-lg font-display font-bold text-[#3F322F] mt-1.5">Halo, {user.nama.split(" ")[0]} 🌸</h3>
+                  <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Konfirmasi Pembelian</span>
+                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Halo, {user.nama.split(" ")[0]} 🌸</h3>
                 </div>
-                <div className="p-4 bg-[#FAF8F5] border border-[#EADCC9]/55 rounded-2xl space-y-2 text-sm text-[#5C453C]">
-                  <p>Mama akan membeli <b className="text-[#3F322F]">{pkg.name}</b> seharga <b className="text-[#E06E43]">{formatIDR(total)}</b>.</p>
-                  <p className="flex items-start gap-2"><Download className="w-4 h-4 text-[#E06E43] shrink-0 mt-0.5" /> Materi &amp; video terbuka di akun Mama setelah pembelian.</p>
+                <div className="p-4 bg-[#FEF7FB] border border-[#F3D6E2]/55 rounded-2xl space-y-2 text-sm text-[#5E4455]">
+                  <p>Mama akan membeli <b className="text-[#3E2A38]">{pkg.name}</b> seharga <b className="text-[#D85C99]">{formatIDR(total)}</b>.</p>
+                  <p className="flex items-start gap-2"><Download className="w-4 h-4 text-[#D85C99] shrink-0 mt-0.5" /> Materi &amp; video terbuka di akun Mama setelah pembelian.</p>
                 </div>
-                <button type="button" onClick={handleBuy} className="w-full bg-[#3F322F] hover:bg-[#F2A07C] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                <button type="button" onClick={handleBuy} className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
                   <ClipboardCheck className="w-5 h-5" /> Konfirmasi Pembelian
                 </button>
-                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#937F73] hover:text-[#3F322F] transition font-bold">
+                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Batal &amp; Kembali ke Detail
                 </button>
               </div>
@@ -178,8 +178,8 @@ export default function ServiceBooking() {
             /* ===== KONSULTASI: contact form ===== */
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <span className="text-xs font-bold text-[#E06E43] bg-[#FFF2EB] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Formulir Reservasi</span>
-                <h3 className="text-lg font-display font-bold text-[#3F322F] mt-1.5">Data Kontak Mama</h3>
+                <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Formulir Reservasi</span>
+                <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Data Kontak Mama</h3>
               </div>
 
               {warning && (
@@ -190,16 +190,16 @@ export default function ServiceBooking() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-bold text-[#5C453C] block mb-1.5">Nama Lengkap Mama</label>
+                  <label className="text-sm font-bold text-[#5E4455] block mb-1.5">Nama Lengkap Mama</label>
                   <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#937F73]/70" />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9C8593]/70" />
                     <input type="text" value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} placeholder="Contoh: Rania Kirana" className={inputClass + " pl-10"} required />
                   </div>
                 </div>
                 <div>
                   <label className={labelClass}>Nomor WhatsApp Aktif</label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base text-[#3F322F]/60 font-black">+62</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base text-[#3E2A38]/60 font-black">+62</span>
                     <input type="tel" value={draft.phone} onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))} placeholder="812345678" className={inputClass + " pl-14"} required />
                   </div>
                 </div>
@@ -222,10 +222,10 @@ export default function ServiceBooking() {
               </div>
 
               <div className="pt-2 space-y-3">
-                <button type="submit" className="w-full bg-[#3F322F] hover:bg-[#F2A07C] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                <button type="submit" className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
                   <ClipboardCheck className="w-5 h-5" /> Konfirmasi Reservasi
                 </button>
-                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#937F73] hover:text-[#3F322F] transition font-bold">
+                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Batal &amp; Kembali ke Detail
                 </button>
               </div>

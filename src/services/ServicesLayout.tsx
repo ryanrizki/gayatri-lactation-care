@@ -67,20 +67,20 @@ export default function ServicesLayout() {
       { n: 3, label: "Pesan", short: "Pesan", to: selectedId ? `/layanan/${selectedId}/booking` : "", enabled: !!selectedId },
     ];
     return (
-      <div className="flex justify-center items-center gap-1 sm:gap-2 max-w-xl mx-auto py-2 px-2 sm:py-3 sm:px-4 bg-white/60 backdrop-blur rounded-2xl border border-[#EADCC9]/60 text-sm font-bold text-[#7A6A65] shadow-sm">
+      <div className="flex justify-center items-center gap-1 sm:gap-2 max-w-xl mx-auto py-2 px-2 sm:py-3 sm:px-4 bg-white/60 backdrop-blur rounded-2xl border border-[#F3D6E2]/60 text-sm font-bold text-[#836E7A] shadow-sm">
         {items.map((it, i) => (
           <React.Fragment key={it.n}>
-            {i > 0 && <ChevronRight className="w-4 h-4 text-[#EADCC9] shrink-0" />}
+            {i > 0 && <ChevronRight className="w-4 h-4 text-[#F3D6E2] shrink-0" />}
             <button
               type="button"
               disabled={!it.enabled}
               onClick={() => it.enabled && navigate(it.to)}
               className={`flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl transition cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${
-                step === it.n ? "bg-[#3F322F] text-white shadow-md font-bold" : "hover:bg-[#EADCC9]/30 text-[#5C453C]"
+                step === it.n ? "bg-[#3E2A38] text-white shadow-md font-bold" : "hover:bg-[#F3D6E2]/30 text-[#5E4455]"
               }`}
             >
               <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step === it.n ? "bg-[#FBC2A2] text-[#291E1C]" : "bg-[#EADCC9]/55 text-[#3F322F]"
+                step === it.n ? "bg-[#F8B6D2] text-[#2A1C26]" : "bg-[#F3D6E2]/55 text-[#3E2A38]"
               }`}>{it.n}</span>
               <span className="hidden sm:inline">{it.label}</span>
               <span className="sm:hidden">{it.short}</span>
@@ -94,13 +94,13 @@ export default function ServicesLayout() {
   return (
     <div className="space-y-10 max-w-7xl mx-auto px-4 sm:px-6 mb-16">
       <div className="text-center max-w-3xl mx-auto space-y-4 pb-2">
-        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#E06E43] bg-[#FFF2EB] px-5 py-2 rounded-full shadow-sm">
+        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#D85C99] bg-[#FDEAF2] px-5 py-2 rounded-full shadow-sm">
           🌸 Layanan Spesialis Laktasi Gayatri
         </span>
-        <h1 className="text-3xl md:text-5xl font-display font-black tracking-tight text-[#3F322F]">
-          Pendampingan Laktasi <span className="text-[#F2A07C]">Terpadu</span>
+        <h1 className="text-3xl md:text-5xl font-display font-black tracking-tight text-[#3E2A38]">
+          Pendampingan Laktasi <span className="text-[#E97FB1]">Terpadu</span>
         </h1>
-        <p className="text-[#5C453C] text-base leading-relaxed max-w-lg mx-auto">
+        <p className="text-[#5E4455] text-base leading-relaxed max-w-lg mx-auto">
           Mendampingi setiap momen menyusui dengan pendekatan medis yang suportif, minim trauma, dan terstandarisasi untuk Mama dan si Kecil.
         </p>
       </div>
