@@ -83,9 +83,7 @@ async function startServer() {
       laktasi_homecare: { name: "Konsultasi Laktasi Homecare", price: 350000 },
       laktasi_klinik: { name: "Konsultasi Laktasi Klinik", price: 250000 },
       kelas_bekerja: { name: "Private Class Persiapan Bekerja", price: 400000 },
-      kelas_menyusui: { name: "Private Class Persiapan Menyusui", price: 300000 },
-      webinar_working: { name: "Webinar Sukses Menyusui & Bekerja", price: 75000 },
-      webinar_pumping: { name: "Webinar Pumping Mastery Class", price: 75000 }
+      kelas_menyusui: { name: "Private Class Persiapan Menyusui", price: 300000 }
     };
 
     const selected = basePrices[packageId];

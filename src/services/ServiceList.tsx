@@ -20,12 +20,10 @@ export default function ServiceList() {
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
         {SERVICE_PACKAGES.map((pkg) => {
-          const catLabel = pkg.category === "consultation" ? "Konsultasi" : pkg.category === "class" ? "Kelas Privat" : "Webinar";
+          const catLabel = pkg.category === "consultation" ? "Konsultasi" : "Kelas";
           const catClass = pkg.category === "consultation"
             ? "bg-white/90 text-[#7A6A65] border-[#EADCC9]"
-            : pkg.category === "class"
-            ? "bg-[#FFF2EB] text-[#E06E43] border-[#FFD3BE]"
-            : "bg-blue-50 text-blue-700 border-blue-100";
+            : "bg-[#FFF2EB] text-[#E06E43] border-[#FFD3BE]";
           return (
             <div
               key={pkg.id}

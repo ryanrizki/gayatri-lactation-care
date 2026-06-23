@@ -253,33 +253,5 @@ export const SERVICE_PACKAGES: ServicePackage[] = [
       { title: "Modul PDF · Checklist Perlengkapan Menyusui", type: "pdf" },
       { title: "E-book · Panduan Menyusui Pasca Melahirkan", type: "pdf" }
     ]
-  },
-  {
-    id: "webinar_working",
-    name: "Webinar Sukses Menyusui Meski Kembali Bekerja",
-    category: "webinar",
-    price: 75000,
-    description: "Webinar edukasi interaktif bersama ratusan Mama se-Indonesia mengupas kiat-kiat menjaga suplai susu tetap tinggi di bilik pompa kantor.",
-    features: [
-      "Webinar interaktif Zoom 90 menit",
-      "Sesi tanya jawab tanya langsung konselor",
-      "Akses rekaman siaran ulang 30 hari",
-      "PDF slide materi seminar lengkap"
-    ],
-    image: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    id: "webinar_pumping",
-    name: "Webinar Pumping Mastery Class",
-    category: "webinar",
-    price: 75000,
-    description: "Kupas tuntas rahasia teknik memompa, frekuensi, power pumping, dan menjaga keawetan nutrisi ASI perah dari pembekuan hingga cair.",
-    features: [
-      "Webinar praktis Zoom (Durasi 90 menit)",
-      "Studi kasus kegagalan pelekatan pompa laktasi",
-      "Tips mencocokkan silikon corong pompa",
-      "Grup diskusi sesama pejuang ASI perah"
-    ],
-    image: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop&q=8"
   }
 ];

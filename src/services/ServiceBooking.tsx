@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, CalendarClock } from "lucide-react";
-import { findPackage, getKind, KIND_META, WEBINAR_EVENT } from "./serviceConfig";
+import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
+import { findPackage, getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesLayout";
+import { useAuth } from "../auth/AuthContext";
+import LoginForm from "../auth/LoginForm";
 
 const formatIDR = (num: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
@@ -15,7 +17,8 @@ export default function ServiceBooking() {
   const { id } = useParams();
   const navigate = useNavigate();
   const pkg = findPackage(id);
-  const { distanceKm, classMode, draft, setDraft, receipt, setReceipt } = useServices();
+  const { distanceKm, draft, setDraft, receipt, setReceipt } = useServices();
+  const { user } = useAuth();
   const [warning, setWarning] = useState<string | null>(null);
 
   const kind = pkg ? getKind(pkg) : "class";
@@ -29,10 +32,12 @@ export default function ServiceBooking() {
   if (!pkg) return <Navigate to="/layanan" replace />;
 
   const total = estimate?.total ?? pkg.price;
+  const isDigital = meta.isDigital;
 
+  // Consultation form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!draft.name || !draft.phone || (meta.usesDatePicker && !draft.date) || (meta.usesEmail && !draft.email)) {
+    if (!draft.name || !draft.phone || (meta.usesDatePicker && !draft.date)) {
       setWarning("Mohon lengkapi data yang ditandai wajib ya, Ma. 🌸");
       return;
     }
@@ -41,13 +46,28 @@ export default function ServiceBooking() {
       id: "BK-" + Math.floor(100000 + ((pkg.price + draft.name.length * 37) % 900000)),
       name: draft.name,
       phone: draft.phone,
-      email: meta.usesEmail ? draft.email : undefined,
       serviceName: pkg.name,
       kind,
-      dateLabel: meta.usesDatePicker ? draft.date : `${WEBINAR_EVENT.dateLabel} · ${WEBINAR_EVENT.timeLabel}`,
-      time: meta.usesDatePicker ? draft.time : WEBINAR_EVENT.timeLabel,
-      methodLabel: kind === "homecare" ? `${meta.methodLabel} (${distanceKm} km)` : kind === "class" ? `${meta.methodLabel} · ${classMode}` : meta.methodLabel,
+      dateLabel: draft.date,
+      time: draft.time,
+      methodLabel: kind === "homecare" ? `${meta.methodLabel} (${distanceKm} km)` : meta.methodLabel,
       distanceKm: kind === "homecare" ? distanceKm : undefined,
+      total,
+    });
+  };
+
+  // Kelas purchase confirm (requires login)
+  const handleBuy = () => {
+    if (!user) return;
+    setReceipt({
+      id: "KLS-" + Math.floor(100000 + ((pkg.price + user.nama.length * 37) % 900000)),
+      name: user.nama,
+      phone: user.kontak,
+      serviceName: pkg.name,
+      kind,
+      dateLabel: "Akses digital",
+      time: "",
+      methodLabel: "Kelas Digital",
       total,
     });
   };
@@ -83,15 +103,9 @@ export default function ServiceBooking() {
               <div>
                 <span className="text-xs font-bold text-[#937F73] block uppercase tracking-wide">Metode</span>
                 <span className="text-base font-bold text-[#3F322F] block mt-0.5">
-                  {kind === "homecare" ? `${meta.methodLabel} (${distanceKm} km)` : kind === "class" ? `${meta.methodLabel} · ${classMode}` : meta.methodLabel}
+                  {kind === "homecare" ? `${meta.methodLabel} (${distanceKm} km)` : meta.methodLabel}
                 </span>
               </div>
-              {kind === "webinar" && (
-                <div className="flex items-start gap-2 text-sm text-[#5C453C]">
-                  <CalendarClock className="w-4 h-4 text-[#E06E43] shrink-0 mt-0.5" />
-                  <span>{WEBINAR_EVENT.dateLabel} · {WEBINAR_EVENT.timeLabel}</span>
-                </div>
-              )}
               <hr className="border-[#EADCC9]/50 border-dashed" />
               <div className="flex justify-between items-center text-base font-bold">
                 <span className="text-[#5C453C]">Total</span>
@@ -100,37 +114,68 @@ export default function ServiceBooking() {
             </div>
             <div className="p-3.5 bg-sky-50 border border-sky-100 rounded-2xl flex items-start gap-2 text-sm text-sky-800 leading-snug">
               <Info className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-              <span>Pembayaran dilakukan langsung setelah layanan selesai. 100% transparan tanpa deposit di awal.</span>
+              <span>{isDigital
+                ? "Setelah pembelian, materi & video tersimpan di akun Mama. Tim kami mengaktifkannya segera."
+                : "Pembayaran dilakukan langsung setelah layanan selesai. 100% transparan tanpa deposit di awal."}</span>
             </div>
           </div>
         </div>
 
-        {/* Form or receipt */}
+        {/* Right column */}
         <div className="md:col-span-7 p-5 sm:p-6 md:p-8">
           {receipt ? (
             <div className="space-y-6 text-center animate-fadeIn py-2">
               <div className="w-16 h-16 bg-[#D1E1CE] text-[#4D6B4E] border border-[#CCDDC8] flex items-center justify-center rounded-full mx-auto text-2xl font-black">✓</div>
               <div className="space-y-1">
-                <h3 className="text-lg font-display font-bold text-[#3F322F]">Pendaftaran Berhasil!</h3>
-                <p className="text-sm text-[#5C453C]">Kode Reservasi: <span className="font-bold text-[#3F322F]">{receipt.id}</span></p>
+                <h3 className="text-lg font-display font-bold text-[#3F322F]">{isDigital ? "Pembelian Berhasil!" : "Pendaftaran Berhasil!"}</h3>
+                <p className="text-sm text-[#5C453C]">Kode: <span className="font-bold text-[#3F322F]">{receipt.id}</span></p>
               </div>
               <div className="bg-[#FAF8F5] border border-[#EADCC9]/55 text-left p-5 rounded-2xl text-sm text-[#5C453C] leading-relaxed space-y-3">
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Pendaftar</span><span className="font-bold text-[#3F322F]">{receipt.name}</span> ({receipt.phone}{receipt.email ? `, ${receipt.email}` : ""})</p>
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Layanan</span><span className="font-bold text-[#3F322F]">{receipt.serviceName}</span></p>
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Jadwal</span><span className="font-bold text-[#3F322F]">{receipt.dateLabel}</span></p>
-                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Metode</span><span className="font-bold text-[#3F322F]">{receipt.methodLabel}</span></p>
+                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Pembeli" : "Pendaftar"}</span><span className="font-bold text-[#3F322F]">{receipt.name}</span> ({receipt.phone})</p>
+                <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">{isDigital ? "Kelas" : "Layanan"}</span><span className="font-bold text-[#3F322F]">{receipt.serviceName}</span></p>
+                {!isDigital && (
+                  <>
+                    <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Jadwal</span><span className="font-bold text-[#3F322F]">{receipt.dateLabel} · {receipt.time} WIB</span></p>
+                    <p><span className="text-[#937F73] font-bold block uppercase text-xs tracking-wide">Metode</span><span className="font-bold text-[#3F322F]">{receipt.methodLabel}</span></p>
+                  </>
+                )}
                 <div className="border-t border-dashed border-[#EADCC9] pt-2.5 flex justify-between font-bold text-base text-[#3F322F]">
                   <span>Total</span><span className="text-[#E06E43] font-black">{formatIDR(receipt.total)}</span>
                 </div>
               </div>
               <p className="text-sm text-[#937F73] leading-relaxed max-w-md mx-auto">
-                Admin Gayatri menghubungi Mama via WhatsApp maksimal 1×24 jam untuk konfirmasi. Terima kasih ya, Ma!
+                {isDigital
+                  ? "Materi & video akan tersedia di halaman akun Gayatri Mama. Tim kami akan mengaktifkannya segera ya, Ma!"
+                  : "Admin Gayatri menghubungi Mama via WhatsApp maksimal 1×24 jam untuk konfirmasi. Terima kasih ya, Ma!"}
               </p>
               <button type="button" onClick={resetAll} className="w-full min-h-[48px] py-3 bg-[#3F322F] hover:bg-[#F2A07C] text-white font-bold text-sm rounded-full cursor-pointer transition-colors shadow-md">
                 Kembali ke Daftar Layanan
               </button>
             </div>
+          ) : isDigital ? (
+            /* ===== KELAS: login gate -> confirm purchase ===== */
+            !user ? (
+              <LoginForm heading="Masuk untuk membeli kelas" />
+            ) : (
+              <div className="space-y-5">
+                <div>
+                  <span className="text-xs font-bold text-[#E06E43] bg-[#FFF2EB] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Konfirmasi Pembelian</span>
+                  <h3 className="text-lg font-display font-bold text-[#3F322F] mt-1.5">Halo, {user.nama.split(" ")[0]} 🌸</h3>
+                </div>
+                <div className="p-4 bg-[#FAF8F5] border border-[#EADCC9]/55 rounded-2xl space-y-2 text-sm text-[#5C453C]">
+                  <p>Mama akan membeli <b className="text-[#3F322F]">{pkg.name}</b> seharga <b className="text-[#E06E43]">{formatIDR(total)}</b>.</p>
+                  <p className="flex items-start gap-2"><Download className="w-4 h-4 text-[#E06E43] shrink-0 mt-0.5" /> Materi &amp; video terbuka di akun Mama setelah pembelian.</p>
+                </div>
+                <button type="button" onClick={handleBuy} className="w-full bg-[#3F322F] hover:bg-[#F2A07C] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                  <ClipboardCheck className="w-5 h-5" /> Konfirmasi Pembelian
+                </button>
+                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#937F73] hover:text-[#3F322F] transition font-bold">
+                  Batal &amp; Kembali ke Detail
+                </button>
+              </div>
+            )
           ) : (
+            /* ===== KONSULTASI: contact form ===== */
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <span className="text-xs font-bold text-[#E06E43] bg-[#FFF2EB] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Formulir Reservasi</span>
@@ -151,7 +196,6 @@ export default function ServiceBooking() {
                     <input type="text" value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} placeholder="Contoh: Rania Kirana" className={inputClass + " pl-10"} required />
                   </div>
                 </div>
-
                 <div>
                   <label className={labelClass}>Nomor WhatsApp Aktif</label>
                   <div className="relative">
@@ -159,44 +203,27 @@ export default function ServiceBooking() {
                     <input type="tel" value={draft.phone} onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))} placeholder="812345678" className={inputClass + " pl-14"} required />
                   </div>
                 </div>
-
-                {meta.usesEmail && (
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className={labelClass}>Email (untuk tautan Zoom)</label>
-                    <input type="email" value={draft.email} onChange={(e) => setDraft((d) => ({ ...d, email: e.target.value }))} placeholder="mama@email.com" className={inputClass} required />
+                    <label className={labelClass}>Tanggal</label>
+                    <input type="date" value={draft.date} onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))} className={inputClass + " cursor-pointer"} required />
                   </div>
-                )}
-
-                {meta.usesDatePicker && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={labelClass}>Tanggal</label>
-                      <input type="date" value={draft.date} onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))} className={inputClass + " cursor-pointer"} required />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Waktu / Sesi</label>
-                      <select value={draft.time} onChange={(e) => setDraft((d) => ({ ...d, time: e.target.value }))} className={inputClass + " cursor-pointer"}>
-                        <option value="09:00">09:00 WIB</option>
-                        <option value="11:00">11:00 WIB</option>
-                        <option value="13:00">13:00 WIB</option>
-                        <option value="15:00">15:00 WIB</option>
-                        <option value="18:30">18:30 WIB</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className={labelClass}>Waktu / Sesi</label>
+                    <select value={draft.time} onChange={(e) => setDraft((d) => ({ ...d, time: e.target.value }))} className={inputClass + " cursor-pointer"}>
+                      <option value="09:00">09:00 WIB</option>
+                      <option value="11:00">11:00 WIB</option>
+                      <option value="13:00">13:00 WIB</option>
+                      <option value="15:00">15:00 WIB</option>
+                      <option value="18:30">18:30 WIB</option>
+                    </select>
                   </div>
-                )}
-
-                {!meta.usesDatePicker && (
-                  <div className="flex items-start gap-2.5 p-3.5 bg-[#FAF1E6] rounded-2xl text-sm text-[#3F322F]">
-                    <CalendarClock className="w-5 h-5 text-[#E06E43] shrink-0 mt-0.5" />
-                    <span>Jadwal acara sudah ditentukan: <b>{WEBINAR_EVENT.dateLabel} · {WEBINAR_EVENT.timeLabel}</b>.</span>
-                  </div>
-                )}
+                </div>
               </div>
 
               <div className="pt-2 space-y-3">
                 <button type="submit" className="w-full bg-[#3F322F] hover:bg-[#F2A07C] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                  <ClipboardCheck className="w-5 h-5" /> {kind === "webinar" ? "Konfirmasi Pendaftaran" : "Konfirmasi Reservasi"}
+                  <ClipboardCheck className="w-5 h-5" /> Konfirmasi Reservasi
                 </button>
                 <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#937F73] hover:text-[#3F322F] transition font-bold">
                   Batal &amp; Kembali ke Detail

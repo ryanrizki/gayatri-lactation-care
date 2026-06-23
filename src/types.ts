@@ -82,7 +82,7 @@ export interface ServiceMaterial {
 export interface ServicePackage {
   id: string;
   name: string;
-  category: "consultation" | "class" | "webinar";
+  category: "consultation" | "class";
   price: number;
   description: string;
   features: string[];
