@@ -260,8 +260,8 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* 1b. Auto-rotating promo banner */}
-      <PromoCarousel />
+      {/* 1b. Auto-rotating promo banner — hidden for now */}
+      {/* <PromoCarousel /> */}
 
       {/* 2. Interactive Programs Directory */}
       <section id="program-laktasi" className="space-y-7 md:space-y-9">
