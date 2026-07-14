@@ -1,3 +1,5 @@
+import { findPackage } from "./serviceConfig";
+
 export interface EstimateResult {
   serviceName: string;
   basePrice: number;
@@ -6,14 +8,7 @@ export interface EstimateResult {
   currency: "IDR";
 }
 
-/** Harga dasar layanan. Fase 2 memindahkan ini ke database. */
-const BASE_PRICES: Record<string, { name: string; price: number }> = {
-  laktasi_homecare: { name: "Konsultasi Laktasi Homecare", price: 350000 },
-  laktasi_klinik: { name: "Konsultasi Laktasi Klinik", price: 250000 },
-  kelas_bekerja: { name: "Private Class Persiapan Bekerja", price: 400000 },
-  kelas_menyusui: { name: "Private Class Persiapan Menyusui", price: 300000 },
-};
-
+/** Tarif transport. Fase 2 memindahkan konstanta ini ke tabel Setting. */
 const FREE_RADIUS_KM = 5;
 const FEE_PER_KM = 6000;
 const BASE_TRANSPORT_FEE = 15000;
@@ -24,7 +19,7 @@ export function calculateEstimate(
   locationDistance: number,
   isHomecare: boolean,
 ): EstimateResult | null {
-  const selected = BASE_PRICES[packageId];
+  const selected = findPackage(packageId);
   if (!selected) return null;
 
   let transportFee = 0;

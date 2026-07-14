@@ -38,4 +38,12 @@ describe("calculateEstimate", () => {
     const r = calculateEstimate("laktasi_klinik", 30, false);
     expect(r?.transportFee).toBe(0);
   });
+
+  it("membulatkan transport untuk jarak pecahan", () => {
+    // (6.3333 - 5) * 6000 = 7999.8 -> Math.round jadi 8000.
+    // Math.floor/trunc akan menghasilkan 7999, jadi tes ini mengunci pembulatan.
+    const r = calculateEstimate("laktasi_homecare", 6.3333, true);
+    expect(r?.transportFee).toBe(8000);
+    expect(r?.total).toBe(350000 + 8000);
+  });
 });
