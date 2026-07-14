@@ -20,9 +20,9 @@ export default function SiteHeader() {
 
   useEffect(() => { if (user) setAuthOpen(false); }, [user]);
 
-  /** react-router `end` prop: cocok persis untuk "/", cocok prefix untuk lainnya. */
+  /** react-router `end`: `/` cocok persis; `/layanan` cocok dirinya sendiri + sub-route (per segmen, bukan prefix string). */
   const isActive = (to: string, exact: boolean) =>
-    exact ? pathname === to : pathname.startsWith(to);
+    exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
   return (
     <>
