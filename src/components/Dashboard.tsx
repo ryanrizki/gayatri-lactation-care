@@ -1,10 +1,12 @@
+"use client";
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { CHALLENGES_DATA, SERVICE_PACKAGES } from "../data/challengesData";
 import { BreastfeedingChallenge } from "../types";
 import { 
@@ -27,7 +29,7 @@ const formatIDRshort = (num: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
 
 function PromoCarousel() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -48,7 +50,7 @@ function PromoCarousel() {
         <button
           key={p.id}
           type="button"
-          onClick={() => navigate(`/layanan/${p.id}`)}
+          onClick={() => router.push(`/layanan/${p.id}`)}
           aria-hidden={i !== idx}
           className={`absolute inset-0 w-full text-left transition-opacity duration-700 ease-out cursor-pointer ${i === idx ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
@@ -118,7 +120,7 @@ export default function Dashboard() {
     }
   ];
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [activeProgram, setActiveProgram] = useState<string | null>(null);
   
@@ -325,7 +327,7 @@ export default function Dashboard() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate("/layanan");
+                        router.push("/layanan");
                       }}
                       className="w-full inline-flex items-center justify-center gap-2 min-h-[48px] py-3 bg-[#3E2A38] hover:bg-[#E97FB1] text-white font-bold rounded-full text-sm transition-colors cursor-pointer"
                     >
@@ -447,7 +449,7 @@ export default function Dashboard() {
                   <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                       type="button"
-                      onClick={() => navigate("/layanan")}
+                      onClick={() => router.push("/layanan")}
                       className="w-full text-center py-2.5 sm:py-3 bg-[#3E2A38] hover:bg-[#E97FB1] text-white font-bold rounded-full text-xs transition cursor-pointer"
                     >
                       Hubungi Bidan / Dokter
@@ -543,7 +545,7 @@ export default function Dashboard() {
           </p>
           <div className="flex justify-center pt-1 select-none">
             <button
-              onClick={() => navigate("/layanan")}
+              onClick={() => router.push("/layanan")}
               className="py-2.5 px-6 bg-[#E97FB1] hover:bg-white text-white hover:text-[#3E2A38] font-bold text-xs rounded-full shadow transition-all cursor-pointer flex items-center gap-1.5"
             >
               Layanan Homecare & Klinik
