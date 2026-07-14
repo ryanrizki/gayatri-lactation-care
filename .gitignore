@@ -32,6 +32,15 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+
 # Local agent artifacts
 .claude/skills/rework-section/
 docs/superpowers/
