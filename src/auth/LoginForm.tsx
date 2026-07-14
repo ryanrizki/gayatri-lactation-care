@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { User, LogIn } from "lucide-react";
 import { useAuth } from "./AuthContext";

@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Quicksand", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-brand-zinc-50: #FFF6FA;
+  --color-brand-zinc-100: #FCEAF1;
+  --color-brand-zinc-200: #F3D6E2;
+  --color-brand-zinc-300: #E9CBD8;
+  --color-brand-zinc-400: #C3A6B5;
+  --color-brand-zinc-500: #9C8593;
+  --color-brand-zinc-900: #3E2A38;
+  --color-brand-zinc-950: #2A1C26;
+  --color-brand-amber-400: #F8B6D2; /* Soft warm pastel peach */
+  --color-brand-amber-500: #E97FB1; /* Warm apricot/terracotta pastel */
+}
+
+body {
+  background-color: #FFF6FA; /* Warm linen soft background */
+  color: #3E2A38; /* Soft cocoa/chocolate text instead of raw black */
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: #F8B6D2;
+  color: #2A1C26;
+}
+
+/* Custom animation for fading modules in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Gentle hover float for hero floating cards */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Bottom-sheet slide up (mobile login) */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
+  .animate-float,
+  .animate-slideUp {
+    animation: none;
+  }
+}
+
+/* Rounded, cozy cards and premium soft elements */
+.artistic-btn-solid {
+  background-color: #3E2A38;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border-radius: 9999px; /* Rounded pill style */
+  padding: 0.85rem 1.75rem;
+  font-size: 0.8rem;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #3E2A38;
+  box-shadow: 0 4px 12px rgba(63, 50, 47, 0.1);
+}
+
+.artistic-btn-solid:hover {
+  background-color: #E97FB1;
+  border-color: #E97FB1;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(242, 160, 124, 0.2);
+}
+
+.artistic-card {
+  background-color: #ffffff;
+  border: 1px solid #F3D6E2;
+  border-radius: 1.5rem; /* Cozy soft rounded corners */
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(229, 219, 209, 0.25);
+}
+
+.artistic-card:hover {
+  border-color: #E97FB1;
+  box-shadow: 0 12px 32px rgba(242, 160, 124, 0.15);
+}
+
