@@ -1,16 +1,19 @@
+"use client";
+
 import { useState } from "react";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, ShieldCheck, PlayCircle, Lock, Video, FileText } from "lucide-react";
 import { findPackage, getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
-import { useServices } from "./ServicesLayout";
+import { useServices } from "./ServicesContext";
 
 const formatIDR = (num: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
 
 export default function ServiceDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+  const router = useRouter();
   const pkg = findPackage(id);
   const { setIsHomecare, distanceKm, setDistanceKm } = useServices();
   const [showPreviewNote, setShowPreviewNote] = useState(false);
@@ -19,14 +22,14 @@ export default function ServiceDetail() {
   const meta = KIND_META[kind];
   const { estimate } = useEstimate(pkg?.id ?? "", kind === "homecare", distanceKm);
 
-  if (!pkg) return <Navigate to="/layanan" replace />;
+  if (!pkg) notFound();
 
   const materials = pkg.materials ?? [];
 
   return (
     <div className="space-y-6 animate-fadeIn">
       <button
-        onClick={() => navigate("/layanan")}
+        onClick={() => router.push("/layanan")}
         className="inline-flex items-center gap-2 text-sm font-semibold text-[#836E7A] hover:text-[#3E2A38] transition cursor-pointer select-none"
       >
         <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar Layanan
@@ -194,7 +197,7 @@ export default function ServiceDetail() {
           <div className="pt-6 space-y-3">
             <button
               type="button"
-              onClick={() => { setIsHomecare(kind === "homecare"); navigate(`/layanan/${pkg.id}/booking`); }}
+              onClick={() => { setIsHomecare(kind === "homecare"); router.push(`/layanan/${pkg.id}/booking`); }}
               className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
             >
               <ClipboardCheck className="w-5 h-5" />
@@ -203,7 +206,7 @@ export default function ServiceDetail() {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/layanan")}
+              onClick={() => router.push("/layanan")}
               className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold"
             >
               Lihat Layanan Lain
