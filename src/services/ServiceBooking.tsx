@@ -1,21 +1,22 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
 import { findPackage, getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
-import { useServices } from "./ServicesLayout";
+import { useServices } from "./ServicesContext";
 import { useAuth } from "../auth/AuthContext";
 import LoginForm from "../auth/LoginForm";
-
-const formatIDR = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
+import { formatIDR } from "@/lib/format";
 
 const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#F3D6E2] focus:border-[#E97FB1] rounded-2xl focus:outline-none bg-[#FFFCFD] text-[#3E2A38]";
 const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";
 
 export default function ServiceBooking() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+  const router = useRouter();
   const pkg = findPackage(id);
   const { distanceKm, draft, setDraft, receipt, setReceipt } = useServices();
   const { user } = useAuth();
@@ -29,7 +30,12 @@ export default function ServiceBooking() {
     if (pkg && receipt && receipt.serviceName !== pkg.name) setReceipt(null);
   }, [pkg, receipt, setReceipt]);
 
-  if (!pkg) return <Navigate to="/layanan" replace />;
+  // Unreachable di Fase 1: server page ([id]/booking/page.tsx) menolak id tak dikenal via
+  // dynamicParams=false sebelum komponen ini mount. Disimpan sebagai defense-in-depth.
+  // JEBAKAN: notFound() dari komponen client menghasilkan blank __next_error__ di SSR
+  // (Next 15.5.20 + React 19.2.7). Kalau dynamicParams=false dilepas di Fase 2, ganti guard
+  // ini dengan validasi server-side — lihat spec 2026-07-14 bagian 12b.
+  if (!pkg) notFound();
 
   const total = estimate?.total ?? pkg.price;
   const isDigital = meta.isDigital;
@@ -75,13 +81,13 @@ export default function ServiceBooking() {
   const resetAll = () => {
     setReceipt(null);
     setDraft({ name: "", phone: "", email: "", date: "", time: "09:00" });
-    navigate("/layanan");
+    router.push("/layanan");
   };
 
   return (
     <div className="space-y-6 animate-fadeIn">
       <button
-        onClick={() => navigate(`/layanan/${pkg.id}`)}
+        onClick={() => router.push(`/layanan/${pkg.id}`)}
         className="inline-flex items-center gap-2 text-sm font-semibold text-[#836E7A] hover:text-[#3E2A38] transition cursor-pointer select-none"
       >
         <ArrowLeft className="w-4 h-4" /> Kembali ke Detail Layanan
@@ -169,7 +175,7 @@ export default function ServiceBooking() {
                 <button type="button" onClick={handleBuy} className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
                   <ClipboardCheck className="w-5 h-5" /> Konfirmasi Pembelian
                 </button>
-                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
+                <button type="button" onClick={() => router.push(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Batal &amp; Kembali ke Detail
                 </button>
               </div>
@@ -225,7 +231,7 @@ export default function ServiceBooking() {
                 <button type="submit" className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
                   <ClipboardCheck className="w-5 h-5" /> Konfirmasi Reservasi
                 </button>
-                <button type="button" onClick={() => navigate(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
+                <button type="button" onClick={() => router.push(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Batal &amp; Kembali ke Detail
                 </button>
               </div>

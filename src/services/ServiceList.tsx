@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { SERVICE_PACKAGES } from "../data/challengesData";
 import { CheckCircle, ArrowRight } from "lucide-react";
-
-const formatIDR = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
+import { formatIDR } from "@/lib/format";
 
 export default function ServiceList() {
-  const navigate = useNavigate();
+  const router = useRouter();
   return (
     <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between gap-3 border-b border-[#F3D6E2]/50 pb-3">
@@ -56,7 +56,7 @@ export default function ServiceList() {
               <div className="pt-4">
                 <button
                   type="button"
-                  onClick={() => navigate(`/layanan/${pkg.id}`)}
+                  onClick={() => router.push(`/layanan/${pkg.id}`)}
                   className="w-full min-h-[44px] py-3 bg-[#3E2A38] hover:bg-[#E97FB1] text-white rounded-full text-sm font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>Lihat Detail</span>
