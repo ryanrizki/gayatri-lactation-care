@@ -93,7 +93,8 @@ test("state funnel bertahan lintas navigasi (jarak terbawa ke booking)", async (
   await expect(page).toHaveURL("/layanan/laktasi_homecare/booking");
 
   // Distance state carried across the navigation (React Context replacement for
-  // react-router outlet context). A lost state would show 4 km / Rp 350.000.
+  // react-router outlet context). A lost state would reset to 4 km / Rp 365.000
+  // (base 350.000 + flat transport 15.000 inside the 5 km free radius).
   await expect(page.getByText("(20 km)")).toBeVisible();
   await expect(page.getByText(/Rp\s?440\.000/)).toBeVisible();
 });
