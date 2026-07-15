@@ -8,9 +8,7 @@ import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
 import { useAuth } from "../auth/AuthContext";
 import LoginForm from "../auth/LoginForm";
-
-const formatIDR = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
+import { formatIDR } from "@/lib/format";
 
 const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#F3D6E2] focus:border-[#E97FB1] rounded-2xl focus:outline-none bg-[#FFFCFD] text-[#3E2A38]";
 const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";

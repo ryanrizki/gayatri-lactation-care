@@ -23,11 +23,9 @@ import {
   MessageSquare,
   ArrowRight
 } from "lucide-react";
+import { formatIDR } from "@/lib/format";
 
 // Auto-rotating product banner carousel (no buttons — whole slide is clickable)
-const formatIDRshort = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
-
 function PromoCarousel() {
   const router = useRouter();
   const [idx, setIdx] = useState(0);
@@ -61,7 +59,7 @@ function PromoCarousel() {
               {p.category === "consultation" ? "Konsultasi" : "Kelas Digital"}
             </span>
             <h3 className="font-display font-black text-white text-xl sm:text-2xl md:text-3xl leading-tight drop-shadow">{p.name}</h3>
-            <p className="font-display font-black text-white text-lg sm:text-xl drop-shadow">{formatIDRshort(p.price)}</p>
+            <p className="font-display font-black text-white text-lg sm:text-xl drop-shadow">{formatIDR(p.price)}</p>
           </div>
         </button>
       ))}

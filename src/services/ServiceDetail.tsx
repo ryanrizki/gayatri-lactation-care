@@ -6,9 +6,7 @@ import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, S
 import { findPackage, getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
-
-const formatIDR = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
+import { formatIDR } from "@/lib/format";
 
 export default function ServiceDetail() {
   const params = useParams<{ id: string }>();

@@ -3,9 +3,7 @@
 import { useRouter } from "next/navigation";
 import { SERVICE_PACKAGES } from "../data/challengesData";
 import { CheckCircle, ArrowRight } from "lucide-react";
-
-const formatIDR = (num: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
+import { formatIDR } from "@/lib/format";
 
 export default function ServiceList() {
   const router = useRouter();
