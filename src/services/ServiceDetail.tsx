@@ -22,6 +22,11 @@ export default function ServiceDetail() {
   const meta = KIND_META[kind];
   const { estimate } = useEstimate(pkg?.id ?? "", kind === "homecare", distanceKm);
 
+  // Unreachable di Fase 1: server page ([id]/page.tsx) menolak id tak dikenal via
+  // dynamicParams=false sebelum komponen ini mount. Disimpan sebagai defense-in-depth.
+  // JEBAKAN: notFound() dari komponen client menghasilkan blank __next_error__ di SSR
+  // (Next 15.5.20 + React 19.2.7). Kalau dynamicParams=false dilepas di Fase 2, ganti guard
+  // ini dengan validasi server-side — lihat spec 2026-07-14 bagian 12b.
   if (!pkg) notFound();
 
   const materials = pkg.materials ?? [];
