@@ -31,7 +31,7 @@ export async function getServices(): Promise<ServicePackage[]> {
 
 /** Satu layanan by id, atau null. */
 export async function getService(id: string): Promise<ServicePackage | null> {
-  const row = await prisma.service.findUnique({ where: { id } });
+  const row = await prisma.service.findFirst({ where: { id, active: true } });
   return row ? toPackage(row) : null;
 }
 
