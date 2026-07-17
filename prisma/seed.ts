@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { SERVICE_PACKAGES, CHALLENGES_DATA } from "../src/data/challengesData";
+import { SERVICE_PACKAGES, CHALLENGES_DATA } from "./seed-data";
 
 const prisma = new PrismaClient();
 

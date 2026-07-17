@@ -1,5 +1,4 @@
-import { SERVICE_PACKAGES } from "../data/challengesData";
-import { ServicePackage } from "../types";
+import type { ServicePackage } from "@/types";
 
 export type ServiceKind = "homecare" | "klinik" | "class";
 
@@ -8,10 +7,6 @@ export function getKind(pkg: ServicePackage): ServiceKind {
   if (pkg.id === "laktasi_homecare") return "homecare";
   if (pkg.id === "laktasi_klinik") return "klinik";
   return "class"; // Kelas digital
-}
-
-export function findPackage(id: string | undefined): ServicePackage | undefined {
-  return SERVICE_PACKAGES.find((p) => p.id === id);
 }
 
 export interface KindMeta {
