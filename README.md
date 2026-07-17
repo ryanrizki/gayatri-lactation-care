@@ -28,6 +28,7 @@ cp .env.example .env          # berisi DATABASE_URL default yang cocok dengan co
 npx prisma migrate deploy     # terapkan schema (atau `npx prisma migrate dev`)
 npx prisma generate           # generate Prisma Client (jika belum otomatis)
 npm run db:seed               # isi data layanan, challenge, setelan estimator
+npm run db:seed-admin         # buat user admin dari ADMIN_EMAIL/ADMIN_PASSWORD di .env
 npm run dev                   # http://localhost:3000
 ```
 
@@ -43,6 +44,16 @@ npm run test:e2e             # E2E (Playwright)
 
 `GEMINI_API_KEY` bersifat opsional (isi di `.env`). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
 
+## Autentikasi
+
+Autentikasi memakai **Auth.js v5** (credentials provider, password argon2id, sesi JWT).
+
+- **`AUTH_SECRET` wajib** ada di `.env` untuk menandatangani sesi JWT. Generate dengan `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` (lihat `.env.example`).
+- **Admin** dibuat sekali via `npm run db:seed-admin`, memakai `ADMIN_EMAIL` dan `ADMIN_PASSWORD` dari `.env`. Ganti nilai default sebelum produksi.
+- **User** mendaftar sendiri di **`/daftar`** (langsung otomatis masuk) dan login di **`/masuk`**. Registrasi selalu membuat akun role `USER`; role `ADMIN` hanya lewat seed.
+
+> **Catatan produksi:** di balik proxy/hosting (mis. Cloud Run), Auth.js butuh host tepercaya — set `AUTH_TRUST_HOST=true` di environment saat menjalankan `next start`, jika tidak endpoint `/api/auth/*` akan menolak permintaan (`UntrustedHost`). Mode `next dev` sudah otomatis memercayai localhost.
+
 ## Scripts
 
 | Perintah | Fungsi |
@@ -54,6 +65,7 @@ npm run test:e2e             # E2E (Playwright)
 | `npm test` | Unit test (Vitest) |
 | `npm run test:e2e` | End-to-end test (Playwright) |
 | `npm run db:seed` | Isi database dengan data awal (`tsx prisma/seed.ts`) |
+| `npm run db:seed-admin` | Buat/update user admin dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` |
 | `npm run db:reset` | Reset + migrasi ulang database (`prisma migrate reset`) |
 
 ## Routes
@@ -64,6 +76,8 @@ npm run test:e2e             # E2E (Playwright)
 | `/layanan` | Daftar layanan |
 | `/layanan/[id]` | Detail layanan (tampilan per kategori) |
 | `/layanan/[id]/booking` | Formulir reservasi (per kategori) |
+| `/masuk` | Login |
+| `/daftar` | Registrasi (auto sign-in) |
 
 Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
 

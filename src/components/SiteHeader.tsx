@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart, CalendarCheck, UserCircle, LogOut, X } from "lucide-react";
-import { useAuth } from "@/auth/AuthContext";
-import LoginForm from "@/auth/LoginForm";
+import { Heart, CalendarCheck, UserCircle, LogOut } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 const navItems = [
   { to: "/", label: "Edu Hub", Icon: Heart, end: true },
@@ -15,10 +13,8 @@ const navItems = [
 export default function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, logout } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-
-  useEffect(() => { if (user) setAuthOpen(false); }, [user]);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   /** react-router `end`: `/` cocok persis; `/layanan` cocok dirinya sendiri + sub-route (per segmen, bukan prefix string). */
   const isActive = (to: string, exact: boolean) =>
@@ -70,11 +66,11 @@ export default function SiteHeader() {
             {user ? (
               <div className="flex items-center gap-1.5">
                 <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#3E2A38] bg-[#FCE9F1] border border-[#F3D6E2] rounded-full px-3 min-h-[40px]">
-                  <UserCircle className="w-4 h-4 text-[#D85C99]" /> {user.nama.split(" ")[0]}
+                  <UserCircle className="w-4 h-4 text-[#D85C99]" /> {user.name?.split(" ")[0]}
                 </span>
                 <button
                   type="button"
-                  onClick={logout}
+                  onClick={() => signOut({ redirectTo: "/" })}
                   className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-full text-xs font-bold text-[#836E7A] hover:text-[#3E2A38] hover:bg-white/60 transition cursor-pointer"
                   aria-label="Keluar"
                 >
@@ -82,13 +78,12 @@ export default function SiteHeader() {
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => setAuthOpen((o) => !o)}
+              <Link
+                href="/masuk"
                 className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-sm font-bold bg-[#FCE9F1] border border-[#F3D6E2] text-[#3E2A38] hover:bg-[#F8B6D2]/40 transition cursor-pointer"
               >
                 <UserCircle className="w-5 h-5 text-[#D85C99]" /> Masuk
-              </button>
+              </Link>
             )}
           </div>
         </div>
@@ -109,31 +104,6 @@ export default function SiteHeader() {
           ))}
         </nav>
       </header>
-
-      {/* Login overlay — rendered at root (outside the backdrop-blur header) so `fixed` anchors to the viewport */}
-      {!user && authOpen && (
-        <>
-          {/* Scrim: dark on mobile, transparent click-away on desktop */}
-          <div
-            className="fixed inset-0 z-[100] bg-[#2A1C26]/40 md:bg-transparent animate-fadeIn"
-            onClick={() => setAuthOpen(false)}
-            aria-hidden
-          />
-          {/* Panel: bottom sheet on mobile, top-right card on desktop */}
-          <div className="fixed inset-x-0 bottom-0 z-[110] bg-white border-t border-[#F3D6E2] rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl animate-slideUp md:inset-x-auto md:bottom-auto md:right-4 md:top-24 md:w-72 md:rounded-2xl md:border md:p-4 md:shadow-xl md:animate-fadeIn">
-            <div className="md:hidden mx-auto mb-3 h-1.5 w-12 rounded-full bg-[#F3D6E2]" />
-            <button
-              type="button"
-              onClick={() => setAuthOpen(false)}
-              aria-label="Tutup"
-              className="md:hidden absolute right-4 top-4 inline-flex items-center justify-center w-9 h-9 rounded-full text-[#836E7A] hover:bg-[#FCE9F1] transition cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <LoginForm heading="Masuk ke Akun Mama" />
-          </div>
-        </>
-      )}
     </>
   );
 }
