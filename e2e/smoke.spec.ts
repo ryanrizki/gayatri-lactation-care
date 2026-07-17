@@ -61,19 +61,22 @@ test("alur konsultasi: pilih paket, hitung tarif, reservasi", async ({ page }) =
   await expect(page.getByText("Pendaftaran Berhasil!")).toBeVisible();
 });
 
-test("alur kelas digital: butuh login sebelum beli", async ({ page }) => {
+test("alur kelas digital: butuh login (real auth) sebelum beli", async ({ page }) => {
+  // Logged out -> gate shows the login prompt, not a buy confirmation.
   await page.goto("/layanan/kelas_menyusui/booking");
-  // No user logged in -> login gate first.
   await expect(page.getByText("Masuk untuk membeli kelas")).toBeVisible();
 
-  await page.getByPlaceholder("Contoh: Rania Kirana").fill("Mama Uji");
-  await page
-    .getByPlaceholder("0812xxxx atau mama@email.com")
-    .fill("mama@uji.test");
-  // "Masuk" also exists in the site header; scope to the login form in <main>.
-  await page.getByRole("main").getByRole("button", { name: "Masuk" }).click();
+  // Register a fresh user; the register action auto-signs-in and redirects to "/".
+  const email = `mama_${Date.now()}@uji.test`;
+  await page.goto("/daftar");
+  await page.getByLabel(/nama/i).fill("Mama Uji");
+  await page.getByLabel(/email/i).fill(email);
+  await page.getByLabel(/password/i).fill("RahasiaMama123");
+  await page.getByRole("button", { name: /daftar/i }).click();
+  await page.waitForURL("/");
 
-  // After login the purchase confirmation appears.
+  // Now logged in -> buy the class.
+  await page.goto("/layanan/kelas_menyusui/booking");
   await page.getByRole("button", { name: "Konfirmasi Pembelian" }).click();
   await expect(page.getByText("Pembelian Berhasil!")).toBeVisible();
 });
