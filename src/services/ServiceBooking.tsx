@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
-import { useAuth } from "../auth/AuthContext";
-import LoginForm from "../auth/LoginForm";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { formatIDR } from "@/lib/format";
 import type { ServicePackage } from "@/types";
 import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
@@ -17,7 +17,8 @@ const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";
 export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
   const router = useRouter();
   const { distanceKm, draft, setDraft, receipt, setReceipt } = useServices();
-  const { user } = useAuth();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [warning, setWarning] = useState<string | null>(null);
 
   const kind = getKind(pkg);
@@ -57,9 +58,9 @@ export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
   const handleBuy = () => {
     if (!user) return;
     setReceipt({
-      id: "KLS-" + Math.floor(100000 + ((pkg.price + user.nama.length * 37) % 900000)),
-      name: user.nama,
-      phone: user.kontak,
+      id: "KLS-" + Math.floor(100000 + ((pkg.price + (user.name ?? "").length * 37) % 900000)),
+      name: user.name ?? "",
+      phone: user.email ?? "",
       serviceName: pkg.name,
       kind,
       dateLabel: "Akses digital",
@@ -152,12 +153,21 @@ export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
           ) : isDigital ? (
             /* ===== KELAS: login gate -> confirm purchase ===== */
             !user ? (
-              <LoginForm heading="Masuk untuk membeli kelas" body="Masuk dulu untuk membeli kelas ya, Ma. Materi & video tersimpan di akun Mama." />
+              <div className="space-y-5">
+                <div>
+                  <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Masuk untuk membeli kelas</span>
+                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Masuk dulu ya, Ma 🌸</h3>
+                </div>
+                <p className="text-sm text-[#5E4455] leading-relaxed">Masuk dulu untuk membeli kelas ya, Ma. Materi &amp; video tersimpan di akun Mama.</p>
+                <Link href={`/masuk?callbackUrl=/layanan/${pkg.id}/booking`} className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                  Masuk ke Akun Mama
+                </Link>
+              </div>
             ) : (
               <div className="space-y-5">
                 <div>
                   <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Konfirmasi Pembelian</span>
-                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Halo, {user.nama.split(" ")[0]} 🌸</h3>
+                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Halo, {user.name?.split(" ")[0]} 🌸</h3>
                 </div>
                 <div className="p-4 bg-[#FEF7FB] border border-[#F3D6E2]/55 rounded-2xl space-y-2 text-sm text-[#5E4455]">
                   <p>Mama akan membeli <b className="text-[#3E2A38]">{pkg.name}</b> seharga <b className="text-[#D85C99]">{formatIDR(total)}</b>.</p>
