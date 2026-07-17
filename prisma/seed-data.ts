@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BreastfeedingChallenge, ServicePackage } from "../types";
+import type { BreastfeedingChallenge, ServicePackage } from "../src/types";
 
 export const CHALLENGES_DATA: BreastfeedingChallenge[] = [
   {

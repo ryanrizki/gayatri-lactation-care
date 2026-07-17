@@ -1,4 +1,4 @@
-import { findPackage } from "./serviceConfig";
+import type { EstimatorConfig } from "@/lib/settings";
 
 export interface EstimateResult {
   serviceName: string;
@@ -8,33 +8,28 @@ export interface EstimateResult {
   currency: "IDR";
 }
 
-/** Tarif transport. Fase 2 memindahkan konstanta ini ke tabel Setting. */
-const FREE_RADIUS_KM = 5;
-const FEE_PER_KM = 6000;
-const BASE_TRANSPORT_FEE = 15000;
-
-/** Hitung estimasi tarif. Mengembalikan null jika paket tidak dikenal. */
+/** Hitung estimasi tarif atas satu service + konfigurasi tarif. null jika service tak ada. */
 export function calculateEstimate(
-  packageId: string,
+  service: { name: string; price: number } | null | undefined,
+  config: EstimatorConfig,
   locationDistance: number,
   isHomecare: boolean,
 ): EstimateResult | null {
-  const selected = findPackage(packageId);
-  if (!selected) return null;
+  if (!service) return null;
 
   let transportFee = 0;
   if (isHomecare) {
     transportFee =
-      locationDistance > FREE_RADIUS_KM
-        ? Math.round((locationDistance - FREE_RADIUS_KM) * FEE_PER_KM)
-        : BASE_TRANSPORT_FEE;
+      locationDistance > config.freeRadiusKm
+        ? Math.round((locationDistance - config.freeRadiusKm) * config.feePerKm)
+        : config.baseTransportFee;
   }
 
   return {
-    serviceName: selected.name,
-    basePrice: selected.price,
+    serviceName: service.name,
+    basePrice: service.price,
     transportFee,
-    total: selected.price + transportFee,
+    total: service.price + transportFee,
     currency: "IDR",
   };
 }

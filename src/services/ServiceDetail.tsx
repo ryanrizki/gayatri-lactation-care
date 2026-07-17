@@ -1,31 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter, notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, ShieldCheck, PlayCircle, Lock, Video, FileText } from "lucide-react";
-import { findPackage, getKind, KIND_META } from "./serviceConfig";
+import { useRouter } from "next/navigation";
+import { getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
 import { formatIDR } from "@/lib/format";
+import type { ServicePackage } from "@/types";
+import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, ShieldCheck, PlayCircle, Lock, Video, FileText } from "lucide-react";
 
-export default function ServiceDetail() {
-  const params = useParams<{ id: string }>();
-  const id = params.id;
+export default function ServiceDetail({ pkg }: { pkg: ServicePackage }) {
   const router = useRouter();
-  const pkg = findPackage(id);
   const { setIsHomecare, distanceKm, setDistanceKm } = useServices();
   const [showPreviewNote, setShowPreviewNote] = useState(false);
 
-  const kind = pkg ? getKind(pkg) : "class";
+  const kind = getKind(pkg);
   const meta = KIND_META[kind];
-  const { estimate } = useEstimate(pkg?.id ?? "", kind === "homecare", distanceKm);
-
-  // Unreachable di Fase 1: server page ([id]/page.tsx) menolak id tak dikenal via
-  // dynamicParams=false sebelum komponen ini mount. Disimpan sebagai defense-in-depth.
-  // JEBAKAN: notFound() dari komponen client menghasilkan blank __next_error__ di SSR
-  // (Next 15.5.20 + React 19.2.7). Kalau dynamicParams=false dilepas di Fase 2, ganti guard
-  // ini dengan validasi server-side — lihat spec 2026-07-14 bagian 12b.
-  if (!pkg) notFound();
+  const { estimate } = useEstimate(pkg.id, kind === "homecare", distanceKm);
 
   const materials = pkg.materials ?? [];
 

@@ -1,41 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter, notFound } from "next/navigation";
-import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
-import { findPackage, getKind, KIND_META } from "./serviceConfig";
+import { useRouter } from "next/navigation";
+import { getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
 import { useAuth } from "../auth/AuthContext";
 import LoginForm from "../auth/LoginForm";
 import { formatIDR } from "@/lib/format";
+import type { ServicePackage } from "@/types";
+import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
 
 const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#F3D6E2] focus:border-[#E97FB1] rounded-2xl focus:outline-none bg-[#FFFCFD] text-[#3E2A38]";
 const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";
 
-export default function ServiceBooking() {
-  const params = useParams<{ id: string }>();
-  const id = params.id;
+export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
   const router = useRouter();
-  const pkg = findPackage(id);
   const { distanceKm, draft, setDraft, receipt, setReceipt } = useServices();
   const { user } = useAuth();
   const [warning, setWarning] = useState<string | null>(null);
 
-  const kind = pkg ? getKind(pkg) : "class";
+  const kind = getKind(pkg);
   const meta = KIND_META[kind];
-  const { estimate } = useEstimate(pkg?.id ?? "", kind === "homecare", distanceKm);
+  const { estimate } = useEstimate(pkg.id, kind === "homecare", distanceKm);
 
   useEffect(() => {
-    if (pkg && receipt && receipt.serviceName !== pkg.name) setReceipt(null);
+    if (receipt && receipt.serviceName !== pkg.name) setReceipt(null);
   }, [pkg, receipt, setReceipt]);
-
-  // Unreachable di Fase 1: server page ([id]/booking/page.tsx) menolak id tak dikenal via
-  // dynamicParams=false sebelum komponen ini mount. Disimpan sebagai defense-in-depth.
-  // JEBAKAN: notFound() dari komponen client menghasilkan blank __next_error__ di SSR
-  // (Next 15.5.20 + React 19.2.7). Kalau dynamicParams=false dilepas di Fase 2, ganti guard
-  // ini dengan validasi server-side — lihat spec 2026-07-14 bagian 12b.
-  if (!pkg) notFound();
 
   const total = estimate?.total ?? pkg.price;
   const isDigital = meta.isDigital;

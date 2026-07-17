@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SERVICE_PACKAGES } from "../data/challengesData";
-import { CheckCircle, ArrowRight } from "lucide-react";
 import { formatIDR } from "@/lib/format";
+import type { ServicePackage } from "@/types";
+import { CheckCircle, ArrowRight } from "lucide-react";
 
-export default function ServiceList() {
+export default function ServiceList({ services }: { services: ServicePackage[] }) {
   const router = useRouter();
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -14,12 +14,12 @@ export default function ServiceList() {
           Pilih Layanan Terbaik Untuk Mama
         </h2>
         <span className="text-sm font-semibold text-[#836E7A] shrink-0">
-          {SERVICE_PACKAGES.length} Program
+          {services.length} Program
         </span>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-        {SERVICE_PACKAGES.map((pkg) => {
+        {services.map((pkg) => {
           const catLabel = pkg.category === "consultation" ? "Konsultasi" : "Kelas";
           const catClass = pkg.category === "consultation"
             ? "bg-white/90 text-[#836E7A] border-[#F3D6E2]"

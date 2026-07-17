@@ -12,23 +12,36 @@ Aplikasi web pendamping laktasi berbahasa Indonesia. Menyatukan edukasi mandiri 
 
 - **Next.js** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** — styling, palet warm pastel
+- **PostgreSQL 16** + **Prisma 6** — data layanan, challenge, dan setelan estimator
 - **Route Handlers** — API (`/api/chat`, `/api/estimator`)
 - **Google Gemini** (`@google/genai`) — asisten laktasi Minbee
 - **lucide-react** — ikon
 
 ## Run Locally
 
-**Prasyarat:** Node.js
+**Prasyarat:** Node.js, Docker (untuk Postgres lokal)
 
 ```bash
 npm install
-npm run dev                  # http://localhost:3000
+docker compose up -d          # Postgres 16 di port 5435
+cp .env.example .env          # berisi DATABASE_URL default yang cocok dengan compose
+npx prisma migrate deploy     # terapkan schema (atau `npx prisma migrate dev`)
+npx prisma generate           # generate Prisma Client (jika belum otomatis)
+npm run db:seed               # isi data layanan, challenge, setelan estimator
+npm run dev                   # http://localhost:3000
+```
+
+Perintah lain:
+
+```bash
 npm run build && npm start   # produksi
 npm test                     # unit (Vitest)
 npm run test:e2e             # E2E (Playwright)
 ```
 
-`GEMINI_API_KEY` bersifat opsional (salin `.env.example` ke `.env` lalu isi). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
+**Database wajib untuk build & dev.** Halaman `/layanan/[id]` dan `/layanan/[id]/booking` memakai `generateStaticParams`, yang meng-query Postgres saat `next build`. Jadi `npm run build` maupun `npm run dev` butuh `DATABASE_URL` yang bisa dijangkau — jika Postgres mati, build gagal dengan error koneksi Prisma. Pastikan `docker compose up -d` sudah jalan dan data sudah di-seed.
+
+`GEMINI_API_KEY` bersifat opsional (isi di `.env`). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
 
 ## Scripts
 
@@ -40,6 +53,8 @@ npm run test:e2e             # E2E (Playwright)
 | `npm run lint` | Type-check (`tsc --noEmit`) |
 | `npm test` | Unit test (Vitest) |
 | `npm run test:e2e` | End-to-end test (Playwright) |
+| `npm run db:seed` | Isi database dengan data awal (`tsx prisma/seed.ts`) |
+| `npm run db:reset` | Reset + migrasi ulang database (`prisma migrate reset`) |
 
 ## Routes
 
@@ -75,7 +90,17 @@ src/
     ServiceDetail.tsx   # Detail tertarget per kategori
     ServiceBooking.tsx  # Reservasi tertarget per kategori
     serviceConfig.ts    # Deskriptor kategori
+    estimator.ts        # Fungsi murni kalkulasi tarif
     useEstimate.ts      # Hook kalkulasi tarif
-  data/challengesData.ts
+  lib/                  # Query layer (server-only, pakai Prisma)
+    db.ts               # Prisma Client singleton
+    services.ts         # Query layanan
+    challenges.ts       # Query challenge
+    settings.ts         # Setelan estimator
   types.ts
+prisma/
+  schema.prisma         # Model Service, Challenge, Setting
+  migrations/           # Migrasi SQL
+  seed.ts               # Skrip seed
+  seed-data.ts          # Data challenge untuk seed
 ```

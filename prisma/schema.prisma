@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ServiceCategory {
+  consultation
+  class
+}
+
+model Service {
+  id          String          @id
+  name        String
+  category    ServiceCategory
+  price       Int
+  description String
+  features    String[]
+  image       String
+  materials   Json?
+  sortOrder   Int             @default(0)
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Challenge {
+  id                    String   @id
+  title                 String
+  icon                  String
+  description           String
+  criticalSymptoms      String[]
+  immediateSteps        String[]
+  interactiveDiagnostic Json
+  sortOrder             Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
