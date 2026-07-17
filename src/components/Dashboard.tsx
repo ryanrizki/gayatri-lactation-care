@@ -7,8 +7,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CHALLENGES_DATA, SERVICE_PACKAGES } from "../data/challengesData";
-import { BreastfeedingChallenge } from "../types";
+import { BreastfeedingChallenge, ServicePackage } from "../types";
 import { 
   Heart, 
   Baby, 
@@ -26,14 +25,14 @@ import {
 import { formatIDR } from "@/lib/format";
 
 // Auto-rotating product banner carousel (no buttons — whole slide is clickable)
-function PromoCarousel() {
+function PromoCarousel({ services }: { services: ServicePackage[] }) {
   const router = useRouter();
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % SERVICE_PACKAGES.length), 5000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % services.length), 5000);
     return () => clearInterval(t);
   }, [paused]);
 
@@ -44,7 +43,7 @@ function PromoCarousel() {
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
     >
-      {SERVICE_PACKAGES.map((p, i) => (
+      {services.map((p, i) => (
         <button
           key={p.id}
           type="button"
@@ -66,7 +65,7 @@ function PromoCarousel() {
 
       {/* Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-        {SERVICE_PACKAGES.map((p, i) => (
+        {services.map((p, i) => (
           <button
             key={p.id}
             type="button"
@@ -80,7 +79,13 @@ function PromoCarousel() {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({
+  challenges,
+  services,
+}: {
+  challenges: BreastfeedingChallenge[];
+  services: ServicePackage[];
+}) {
   // Selected challenge for interactive diagnostic modal/accordion
   // Selected challenge for interactive diagnostic modal/accordion
   const LAKTASI_PROGRAMS = [
@@ -130,7 +135,7 @@ export default function Dashboard() {
   const [diagnosticFinished, setDiagnosticFinished] = useState<boolean>(false);
 
   // Active challenge details
-  const activeChallenge = CHALLENGES_DATA.find(c => c.id === activeChallengeId);
+  const activeChallenge = challenges.find(c => c.id === activeChallengeId);
 
   // Restart symptoms diagnostic check
   const startDiagnostic = (challengeId: string) => {
@@ -261,7 +266,7 @@ export default function Dashboard() {
       </section>
 
       {/* 1b. Auto-rotating promo banner — hidden for now */}
-      {/* <PromoCarousel /> */}
+      {/* <PromoCarousel services={services} /> */}
 
       {/* 2. Interactive Programs Directory */}
       <section id="program-laktasi" className="space-y-7 md:space-y-9">
