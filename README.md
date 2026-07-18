@@ -54,6 +54,17 @@ Autentikasi memakai **Auth.js v5** (credentials provider, password argon2id, ses
 
 > **Catatan produksi:** di balik proxy/hosting (mis. Cloud Run), Auth.js butuh host tepercaya — set `AUTH_TRUST_HOST=true` di environment saat menjalankan `next start`, jika tidak endpoint `/api/auth/*` akan menolak permintaan (`UntrustedHost`). Mode `next dev` sudah otomatis memercayai localhost.
 
+## Admin
+
+Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hanya akun role `ADMIN` yang boleh masuk (anon diarahkan ke `/masuk`, user biasa diarahkan ke `/`).
+
+- **Buat admin:** jalankan `npm run db:seed-admin` (upsert idempoten dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env`). Ganti kredensial default sebelum produksi.
+- **Masuk:** login di **`/masuk`** memakai kredensial admin, lalu buka **`/admin`** (dashboard).
+- **Kelola layanan** di **`/admin/layanan`** — buat (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), dan aktif/nonaktifkan lewat toggle. Perubahan harga/detail langsung ter-reflect di halaman publik `/layanan`.
+- **Setelan estimator** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar yang dipakai kalkulator tarif Homecare.
+
+Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
+
 ## Scripts
 
 | Perintah | Fungsi |
@@ -78,6 +89,11 @@ Autentikasi memakai **Auth.js v5** (credentials provider, password argon2id, ses
 | `/layanan/[id]/booking` | Formulir reservasi (per kategori) |
 | `/masuk` | Login |
 | `/daftar` | Registrasi (auto sign-in) |
+| `/admin` | Dashboard admin (khusus role `ADMIN`) |
+| `/admin/layanan` | Kelola layanan (daftar, aktif/nonaktif) |
+| `/admin/layanan/baru` | Buat layanan baru |
+| `/admin/layanan/[id]` | Edit layanan |
+| `/admin/pengaturan` | Setelan estimator (tarif transport) |
 
 Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
 
