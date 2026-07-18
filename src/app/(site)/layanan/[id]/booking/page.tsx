@@ -1,13 +1,6 @@
 import { notFound } from "next/navigation";
 import ServiceBooking from "@/services/ServiceBooking";
-import { getService, getServiceIds } from "@/lib/services";
-
-export async function generateStaticParams() {
-  const ids = await getServiceIds();
-  return ids.map((id) => ({ id }));
-}
-
-export const dynamicParams = false;
+import { getService } from "@/lib/services";
 
 export default async function ServiceBookingPage({
   params,
