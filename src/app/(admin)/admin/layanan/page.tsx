@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Pencil, PackageOpen } from "lucide-react";
+import { Plus, Pencil, PackageOpen, Layers } from "lucide-react";
 import { getAllServices } from "@/lib/services-admin";
 import { formatIDR } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
@@ -99,6 +99,18 @@ export default async function AdminLayananPage() {
                   </TableCell>
                   <TableCell className="px-4">
                     <div className="flex items-center justify-end gap-3">
+                      {service.category === "class" ? (
+                        <Link
+                          href={`/admin/layanan/${service.id}/modul`}
+                          className={buttonVariants({
+                            variant: "outline",
+                            size: "sm",
+                          })}
+                        >
+                          <Layers className="size-3.5" strokeWidth={2} />
+                          Kelola Modul
+                        </Link>
+                      ) : null}
                       <Link
                         href={`/admin/layanan/${service.id}`}
                         className={buttonVariants({
