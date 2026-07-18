@@ -110,7 +110,7 @@ test("url tidak dikenal menampilkan branded 404 (dua bentuk)", async ({ page }) 
     page.getByRole("link", { name: "Kembali ke Beranda" }),
   ).toBeVisible();
 
-  // Unknown package id -> same branded 404 (dynamicParams=false).
+  // Unknown package id -> same branded 404 (dynamic route + not-found boundary).
   await page.goto("/layanan/paket-hantu");
   await expect(page.getByText("Halaman tidak ditemukan")).toBeVisible();
   await expect(
