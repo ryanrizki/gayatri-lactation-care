@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import VideoUploadField from "@/components/admin/VideoUploadField";
 
 type FormState = { error?: string };
 
 type ModuleInitial = {
+  id?: string;
   title: string;
   description: string;
   isPreview: boolean;
@@ -82,17 +84,10 @@ export default function ModuleForm({
           </div>
         </div>
 
-        <div className="grid gap-2">
-          <Label htmlFor="videoPath">
-            URL Video (sementara — upload di fase berikutnya)
-          </Label>
-          <Input
-            id="videoPath"
-            name="videoPath"
-            defaultValue={initial?.videoPath ?? undefined}
-            placeholder="https://…"
-          />
-        </div>
+        <VideoUploadField
+          moduleId={initial?.id}
+          initialPath={initial?.videoPath ?? null}
+        />
 
         <div className="flex items-center justify-between gap-4 border-t border-border pt-5">
           <Label

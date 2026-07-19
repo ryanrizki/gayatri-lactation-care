@@ -40,6 +40,7 @@ export default async function ModulEditPage({
         <ModuleForm
           action={updateModuleAction.bind(null, moduleId, id)}
           initial={{
+            id: moduleId,
             title: mod.title,
             description: mod.description,
             isPreview: mod.isPreview,
