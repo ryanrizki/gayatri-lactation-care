@@ -8,6 +8,7 @@ export const authConfig = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = (user as { role?: "USER" | "ADMIN" }).role ?? "USER";
         token.nama = (user as { nama?: string }).nama;
       }
@@ -15,6 +16,7 @@ export const authConfig = {
     },
     session({ session, token }) {
       if (session.user) {
+        session.user.id = token.id as string;
         session.user.role = (token.role as "USER" | "ADMIN") ?? "USER";
         session.user.name = (token.nama as string) ?? session.user.name;
       }
