@@ -1,7 +1,14 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
-import { AlertCircle, ArrowUp, ArrowDown, Trash2, FileText } from "lucide-react";
+import { useActionState, useState, useTransition } from "react";
+import {
+  AlertCircle,
+  ArrowUp,
+  ArrowDown,
+  Trash2,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
 import {
   createMaterialAction,
   moveMaterialAction,
@@ -12,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import FileUploadField from "@/components/admin/FileUploadField";
 
 type FormState = { error?: string };
 
@@ -57,17 +65,44 @@ function MaterialRow({
     });
   };
 
+  const isUploaded = material.type === "PDF" || material.type === "VIDEO";
+
   return (
     <li className="flex flex-col gap-3 rounded-lg border border-border bg-background p-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="font-medium">{material.title}</span>
-        <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-          {typeLabels[material.type] ?? material.type}
-        </span>
-        {material.isPreview ? (
-          <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-            Preview
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="font-medium">{material.title}</span>
+          <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+            {typeLabels[material.type] ?? material.type}
           </span>
+          {material.isPreview ? (
+            <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              Preview
+            </span>
+          ) : null}
+        </div>
+        {material.filePath ? (
+          isUploaded ? (
+            <a
+              href={`/api/material/${material.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+              Lihat
+            </a>
+          ) : (
+            <a
+              href={material.filePath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit max-w-full items-center gap-1.5 truncate text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+              <span className="truncate">{material.filePath}</span>
+            </a>
+          )
         ) : null}
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
@@ -119,6 +154,8 @@ export default function MaterialManager({
     createMaterialAction.bind(null, moduleId, serviceId),
     {},
   );
+  const [type, setType] = useState("PDF");
+  const isUploadType = type === "PDF" || type === "VIDEO";
 
   return (
     <section className="space-y-4">
@@ -183,7 +220,8 @@ export default function MaterialManager({
             <select
               id="material-type"
               name="type"
-              defaultValue="PDF"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
               className={cn(
                 "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30",
               )}
@@ -196,10 +234,18 @@ export default function MaterialManager({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="material-filePath">
-            URL File (sementara — upload di fase berikutnya)
+          <Label htmlFor={isUploadType ? "file-upload-filePath" : "material-filePath"}>
+            {isUploadType ? "File" : "URL Tautan"}
           </Label>
-          <Input id="material-filePath" name="filePath" placeholder="https://…" />
+          {isUploadType ? (
+            <FileUploadField key={type} name="filePath" />
+          ) : (
+            <Input
+              id="material-filePath"
+              name="filePath"
+              placeholder="https://…"
+            />
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-4 border-t border-border pt-5">
