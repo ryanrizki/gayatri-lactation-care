@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Settings } from "lucide-react";
+import { LayoutDashboard, Package, GraduationCap, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/admin", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { href: "/admin/layanan", label: "Layanan", Icon: Package, exact: false },
+  { href: "/admin/enrollment", label: "Enrollment", Icon: GraduationCap, exact: false },
   { href: "/admin/pengaturan", label: "Pengaturan", Icon: Settings, exact: false },
 ];
 
