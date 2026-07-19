@@ -21,6 +21,7 @@ model Service {
   features    String[]
   image       String
   materials   Json?
+  modules     Module[]
   sortOrder   Int             @default(0)
   active      Boolean         @default(true)
   createdAt   DateTime        @default(now())
@@ -58,4 +59,42 @@ model User {
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum MaterialType {
+  PDF
+  VIDEO
+  LINK
+}
+
+model Module {
+  id          String     @id @default(cuid())
+  serviceId   String
+  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  title       String
+  description String     @default("")
+  sortOrder   Int        @default(0)
+  videoPath   String?
+  durationSec Int?
+  isPreview   Boolean    @default(false)
+  materials   Material[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([serviceId])
+}
+
+model Material {
+  id        String       @id @default(cuid())
+  moduleId  String
+  module    Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title     String
+  type      MaterialType @default(PDF)
+  filePath  String?
+  isPreview Boolean      @default(false)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([moduleId])
 }

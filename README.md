@@ -61,6 +61,7 @@ Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hany
 - **Buat admin:** jalankan `npm run db:seed-admin` (upsert idempoten dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env`). Ganti kredensial default sebelum produksi.
 - **Masuk:** login di **`/masuk`** memakai kredensial admin, lalu buka **`/admin`** (dashboard).
 - **Kelola layanan** di **`/admin/layanan`** — buat (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), dan aktif/nonaktifkan lewat toggle. Perubahan harga/detail langsung ter-reflect di halaman publik `/layanan`.
+- **Kelola modul kelas** — khusus layanan kategori `class`, susun materi kelas digital di **`/admin/layanan/[id]/modul`**: tambah modul berurutan (Naik/Turun untuk reorder), kelola materi per modul di **`/admin/layanan/[id]/modul/[moduleId]`** (tipe PDF/Video/Tautan), dan tandai modul/materi sebagai cuplikan gratis (preview). Layanan non-kelas (konsultasi) menampilkan "bukan kelas digital" dan tidak punya modul. Upload video/berkas asli menyusul di fase berikutnya — untuk saat ini URL video/file diisi sebagai placeholder.
 - **Setelan estimator** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar yang dipakai kalkulator tarif Homecare.
 
 Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
@@ -93,6 +94,8 @@ Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on
 | `/admin/layanan` | Kelola layanan (daftar, aktif/nonaktif) |
 | `/admin/layanan/baru` | Buat layanan baru |
 | `/admin/layanan/[id]` | Edit layanan |
+| `/admin/layanan/[id]/modul` | Kelola modul kelas digital (khusus kategori `class`) |
+| `/admin/layanan/[id]/modul/[moduleId]` | Edit modul + kelola materi |
 | `/admin/pengaturan` | Setelan estimator (tarif transport) |
 
 Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
