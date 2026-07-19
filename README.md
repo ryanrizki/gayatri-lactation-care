@@ -44,6 +44,8 @@ npm run test:e2e             # E2E (Playwright)
 
 `GEMINI_API_KEY` bersifat opsional (isi di `.env`). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
 
+**`UPLOAD_DIR`** menentukan root penyimpanan file terunggah (video modul & materi PDF), **di luar `public/`**. Default dev **`./uploads`** (sudah di-`.gitignore`, tidak ikut ter-commit). Di produksi (VPS), set ke path persisten di luar repo, mis. `UPLOAD_DIR=/var/lib/gayatri/uploads`, dan pastikan direktori itu writable oleh proses Node serta ikut di-backup. File hanya bisa diambil lewat route ber-gerbang admin `/api/video/[moduleId]` & `/api/material/[id]` (lihat bagian Admin).
+
 ## Autentikasi
 
 Autentikasi memakai **Auth.js v5** (credentials provider, password argon2id, sesi JWT).
@@ -61,7 +63,8 @@ Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hany
 - **Buat admin:** jalankan `npm run db:seed-admin` (upsert idempoten dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env`). Ganti kredensial default sebelum produksi.
 - **Masuk:** login di **`/masuk`** memakai kredensial admin, lalu buka **`/admin`** (dashboard).
 - **Kelola layanan** di **`/admin/layanan`** — buat (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), dan aktif/nonaktifkan lewat toggle. Perubahan harga/detail langsung ter-reflect di halaman publik `/layanan`.
-- **Kelola modul kelas** — khusus layanan kategori `class`, susun materi kelas digital di **`/admin/layanan/[id]/modul`**: tambah modul berurutan (Naik/Turun untuk reorder), kelola materi per modul di **`/admin/layanan/[id]/modul/[moduleId]`** (tipe PDF/Video/Tautan), dan tandai modul/materi sebagai cuplikan gratis (preview). Layanan non-kelas (konsultasi) menampilkan "bukan kelas digital" dan tidak punya modul. Upload video/berkas asli menyusul di fase berikutnya — untuk saat ini URL video/file diisi sebagai placeholder.
+- **Kelola modul kelas** — khusus layanan kategori `class`, susun materi kelas digital di **`/admin/layanan/[id]/modul`**: tambah modul berurutan (Naik/Turun untuk reorder), kelola materi per modul di **`/admin/layanan/[id]/modul/[moduleId]`** (tipe PDF/Video/Tautan), dan tandai modul/materi sebagai cuplikan gratis (preview). Layanan non-kelas (konsultasi) menampilkan "bukan kelas digital" dan tidak punya modul.
+- **Unggah video & materi** — di module builder, admin mengunggah video modul (MP4/WebM) dan berkas materi (PDF) langsung lewat form. File **disimpan di luar `public/`** (di `UPLOAD_DIR`, lihat di bawah) dan **tidak** disajikan sebagai aset statis. Pengambilan lewat route ber-gerbang admin **`/api/video/[moduleId]`** dan **`/api/material/[id]`** yang mendukung HTTP Range (seek video / streaming parsial). Batas ukuran: **video 500 MB**, **PDF 20 MB**.
 - **Setelan estimator** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar yang dipakai kalkulator tarif Homecare.
 
 Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
@@ -97,6 +100,9 @@ Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on
 | `/admin/layanan/[id]/modul` | Kelola modul kelas digital (khusus kategori `class`) |
 | `/admin/layanan/[id]/modul/[moduleId]` | Edit modul + kelola materi |
 | `/admin/pengaturan` | Setelan estimator (tarif transport) |
+| `/api/admin/upload` | Unggah video/materi (admin, streaming) |
+| `/api/video/[moduleId]` | Sajikan video modul (admin, HTTP Range) |
+| `/api/material/[id]` | Sajikan materi PDF (admin, HTTP Range) |
 
 Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
 
