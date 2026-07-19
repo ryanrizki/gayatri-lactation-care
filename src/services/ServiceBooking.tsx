@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
@@ -8,18 +8,43 @@ import { useServices } from "./ServicesContext";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { formatIDR } from "@/lib/format";
+import { buyClassAction } from "@/lib/enrollment-actions";
+import type { PaymentSettings } from "@/lib/settings";
 import type { ServicePackage } from "@/types";
-import { ArrowLeft, ClipboardCheck, User, AlertCircle, Info, Download } from "lucide-react";
+import {
+  ArrowLeft,
+  ClipboardCheck,
+  User,
+  AlertCircle,
+  Info,
+  Download,
+  Clock,
+  MessageCircle,
+  Sparkles,
+  BookOpenCheck,
+} from "lucide-react";
 
 const inputClass = "w-full min-h-[44px] px-4 py-2.5 text-base border border-[#F3D6E2] focus:border-[#E97FB1] rounded-2xl focus:outline-none bg-[#FFFCFD] text-[#3E2A38]";
 const labelClass = "text-sm font-bold text-[#5E4455] block mb-1.5";
 
-export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
+type EnrollmentStatus = "PENDING" | "PAID" | "CANCELLED";
+
+export default function ServiceBooking({
+  pkg,
+  enrollmentStatus = null,
+  payment,
+}: {
+  pkg: ServicePackage;
+  enrollmentStatus?: EnrollmentStatus | null;
+  payment?: PaymentSettings;
+}) {
   const router = useRouter();
   const { distanceKm, draft, setDraft, receipt, setReceipt } = useServices();
   const { data: session } = useSession();
   const user = session?.user;
   const [warning, setWarning] = useState<string | null>(null);
+  const [buyError, setBuyError] = useState<string | null>(null);
+  const [buying, startBuy] = useTransition();
 
   const kind = getKind(pkg);
   const meta = KIND_META[kind];
@@ -54,21 +79,25 @@ export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
     });
   };
 
-  // Kelas purchase confirm (requires login)
+  // Kelas purchase: buat enrollment PENDING lewat server action, lalu refresh.
   const handleBuy = () => {
     if (!user) return;
-    setReceipt({
-      id: "KLS-" + Math.floor(100000 + ((pkg.price + (user.name ?? "").length * 37) % 900000)),
-      name: user.name ?? "",
-      phone: user.email ?? "",
-      serviceName: pkg.name,
-      kind,
-      dateLabel: "Akses digital",
-      time: "",
-      methodLabel: "Kelas Digital",
-      total,
+    setBuyError(null);
+    startBuy(async () => {
+      const res = await buyClassAction(pkg.id);
+      if (res.error) {
+        setBuyError(res.error);
+        return;
+      }
+      router.refresh();
     });
   };
+
+  const waHref = payment
+    ? `https://wa.me/${payment.whatsapp}?text=${encodeURIComponent(
+        "Halo Admin Gayatri, saya sudah membeli kelas " + pkg.name + ". Mohon konfirmasi pembayaran ya.",
+      )}`
+    : undefined;
 
   const resetAll = () => {
     setReceipt(null);
@@ -163,7 +192,75 @@ export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
                   Masuk ke Akun Mama
                 </Link>
               </div>
+            ) : enrollmentStatus === "PAID" ? (
+              /* ----- Sudah punya akses ----- */
+              <div className="space-y-5">
+                <div className="w-14 h-14 bg-[#D1E1CE] text-[#4D6B4E] border border-[#CCDDC8] flex items-center justify-center rounded-full text-2xl">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Akses Aktif</span>
+                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Mama sudah punya akses ke kelas ini 🌸</h3>
+                </div>
+                <p className="text-sm text-[#5E4455] leading-relaxed">
+                  Terima kasih ya, Ma. Pembayaran <b className="text-[#3E2A38]">{pkg.name}</b> sudah dikonfirmasi tim kami. Materi &amp; video akan terbuka di halaman Kelas Saya.
+                </p>
+                <div className="w-full min-h-[48px] py-3.5 rounded-full font-bold text-sm flex items-center justify-center gap-2 bg-[#FDEAF2] text-[#B85C8A] border border-[#F3D6E2] cursor-default">
+                  <BookOpenCheck className="w-5 h-5" /> Kelas Saya (segera hadir)
+                </div>
+                <button type="button" onClick={() => router.push("/layanan")} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
+                  Kembali ke Daftar Layanan
+                </button>
+              </div>
+            ) : enrollmentStatus === "PENDING" ? (
+              /* ----- Menunggu konfirmasi pembayaran ----- */
+              <div className="space-y-5">
+                <div className="w-14 h-14 bg-[#FEF3D9] text-[#B5842B] border border-[#F5E4BE] flex items-center justify-center rounded-full">
+                  <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#B5842B] bg-[#FEF3D9] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Menunggu Pembayaran</span>
+                  <h3 className="text-lg font-display font-bold text-[#3E2A38] mt-1.5">Menunggu Konfirmasi Pembayaran</h3>
+                </div>
+                <p className="text-sm text-[#5E4455] leading-relaxed">
+                  Silakan transfer sebesar <b className="text-[#D85C99]">{formatIDR(total)}</b> untuk <b className="text-[#3E2A38]">{pkg.name}</b> ke rekening berikut ya, Ma:
+                </p>
+                {payment ? (
+                  <div className="p-4 bg-[#FEF7FB] border border-[#F3D6E2]/55 rounded-2xl space-y-3 text-sm text-[#5E4455]">
+                    <div>
+                      <span className="text-xs font-bold text-[#9C8593] block uppercase tracking-wide">Bank</span>
+                      <span className="font-bold text-[#3E2A38] block mt-0.5">{payment.bankName}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-[#9C8593] block uppercase tracking-wide">No. Rekening</span>
+                      <span className="font-bold text-[#3E2A38] block mt-0.5 tabular-nums tracking-wide">{payment.accountNumber}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-[#9C8593] block uppercase tracking-wide">Atas Nama</span>
+                      <span className="font-bold text-[#3E2A38] block mt-0.5">{payment.accountHolder}</span>
+                    </div>
+                  </div>
+                ) : null}
+                <div className="p-3.5 bg-sky-50 border border-sky-100 rounded-2xl flex items-start gap-2 text-sm text-sky-800 leading-snug">
+                  <Info className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                  <span>Setelah transfer, konfirmasi ke admin lewat WhatsApp supaya kelas Mama segera diaktifkan.</span>
+                </div>
+                {waHref ? (
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <MessageCircle className="w-5 h-5" /> Konfirmasi via WhatsApp
+                  </a>
+                ) : null}
+                <button type="button" onClick={() => router.push("/layanan")} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
+                  Kembali ke Daftar Layanan
+                </button>
+              </div>
             ) : (
+              /* ----- Belum beli / dibatalkan: tombol beli ----- */
               <div className="space-y-5">
                 <div>
                   <span className="text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full inline-block uppercase tracking-wide">Konfirmasi Pembelian</span>
@@ -171,10 +268,15 @@ export default function ServiceBooking({ pkg }: { pkg: ServicePackage }) {
                 </div>
                 <div className="p-4 bg-[#FEF7FB] border border-[#F3D6E2]/55 rounded-2xl space-y-2 text-sm text-[#5E4455]">
                   <p>Mama akan membeli <b className="text-[#3E2A38]">{pkg.name}</b> seharga <b className="text-[#D85C99]">{formatIDR(total)}</b>.</p>
-                  <p className="flex items-start gap-2"><Download className="w-4 h-4 text-[#D85C99] shrink-0 mt-0.5" /> Materi &amp; video terbuka di akun Mama setelah pembelian.</p>
+                  <p className="flex items-start gap-2"><Download className="w-4 h-4 text-[#D85C99] shrink-0 mt-0.5" /> Materi &amp; video terbuka di akun Mama setelah pembayaran dikonfirmasi.</p>
                 </div>
-                <button type="button" onClick={handleBuy} className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                  <ClipboardCheck className="w-5 h-5" /> Konfirmasi Pembelian
+                {buyError ? (
+                  <div className="p-3.5 bg-[#FFFBFA] border border-[#FFD9D4] rounded-2xl text-sm text-red-700 flex items-start gap-2 animate-fadeIn">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" /> <span>{buyError}</span>
+                  </div>
+                ) : null}
+                <button type="button" onClick={handleBuy} disabled={buying} className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] disabled:opacity-60 disabled:hover:bg-[#3E2A38] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                  <ClipboardCheck className="w-5 h-5" /> {buying ? "Memproses…" : "Beli Kelas"}
                 </button>
                 <button type="button" onClick={() => router.push(`/layanan/${pkg.id}`)} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Batal &amp; Kembali ke Detail
