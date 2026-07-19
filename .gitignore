@@ -37,6 +37,8 @@ Thumbs.db
 /out/
 next-env.d.ts
 
+/uploads/
+
 # playwright
 /test-results/
 /playwright-report/
