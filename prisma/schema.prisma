@@ -22,6 +22,7 @@ model Service {
   image       String
   materials   Json?
   modules     Module[]
+  enrollments Enrollment[]
   sortOrder   Int             @default(0)
   active      Boolean         @default(true)
   createdAt   DateTime        @default(now())
@@ -52,13 +53,15 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  nama         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String       @id @default(cuid())
+  nama          String
+  email         String       @unique
+  passwordHash  String
+  role          Role         @default(USER)
+  enrollments   Enrollment[] @relation("UserEnrollments")
+  confirmations Enrollment[] @relation("AdminConfirmations")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 enum MaterialType {
@@ -97,4 +100,29 @@ model Material {
   updatedAt DateTime     @updatedAt
 
   @@index([moduleId])
+}
+
+enum EnrollmentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+model Enrollment {
+  id            String           @id @default(cuid())
+  userId        String
+  user          User             @relation("UserEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+  serviceId     String
+  service       Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  status        EnrollmentStatus @default(PENDING)
+  requestedAt   DateTime         @default(now())
+  confirmedAt   DateTime?
+  confirmedById String?
+  confirmedBy   User?            @relation("AdminConfirmations", fields: [confirmedById], references: [id])
+  note          String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([userId, serviceId])
+  @@index([status])
 }
