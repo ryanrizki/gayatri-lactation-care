@@ -65,9 +65,21 @@ Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hany
 - **Kelola layanan** di **`/admin/layanan`** — buat (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), dan aktif/nonaktifkan lewat toggle. Perubahan harga/detail langsung ter-reflect di halaman publik `/layanan`.
 - **Kelola modul kelas** — khusus layanan kategori `class`, susun materi kelas digital di **`/admin/layanan/[id]/modul`**: tambah modul berurutan (Naik/Turun untuk reorder), kelola materi per modul di **`/admin/layanan/[id]/modul/[moduleId]`** (tipe PDF/Video/Tautan), dan tandai modul/materi sebagai cuplikan gratis (preview). Layanan non-kelas (konsultasi) menampilkan "bukan kelas digital" dan tidak punya modul.
 - **Unggah video & materi** — di module builder, admin mengunggah video modul (MP4/WebM) dan berkas materi (PDF) langsung lewat form. File **disimpan di luar `public/`** (di `UPLOAD_DIR`, lihat di bawah) dan **tidak** disajikan sebagai aset statis. Pengambilan lewat route ber-gerbang admin **`/api/video/[moduleId]`** dan **`/api/material/[id]`** yang mendukung HTTP Range (seek video / streaming parsial). Batas ukuran: **video 500 MB**, **PDF 20 MB**.
-- **Setelan estimator** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar yang dipakai kalkulator tarif Homecare.
+- **Kelola pembelian kelas (enrollment)** di **`/admin/enrollment`** — daftar semua pembelian kelas dengan filter status (`Menunggu`/`Lunas`/`Dibatalkan`). Setelah user transfer & konfirmasi, admin klik **Tandai Lunas** (→ `PAID`, mencatat admin pengonfirmasi) atau **Batalkan** (→ `CANCELLED`). Jumlah pembelian yang masih menunggu tampil di dashboard `/admin`.
+- **Setelan estimator & info pembayaran** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar (kalkulator Homecare), serta **info pembayaran kelas** (nama bank, no. rekening, atas nama, nomor WhatsApp) yang ditampilkan ke user saat menunggu konfirmasi.
 
 Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
+
+## Pembelian Kelas
+
+Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** membeli kelas langsung di halaman booking-nya **`/layanan/[id]/booking`**:
+
+- User anonim melihat **gerbang login** (tautan ke `/masuk`), bukan tombol beli.
+- User yang sudah masuk menekan **Beli Kelas** → dibuat **satu** permintaan enrollment berstatus **`PENDING`** (idempoten: membeli/memuat ulang tidak menggandakan baris — dibatasi unik per `user + service`).
+- Panel lalu menampilkan **"Menunggu Konfirmasi Pembayaran"** beserta info transfer (bank/rekening/atas nama) dan tombol **Konfirmasi via WhatsApp** (`wa.me`) untuk mengabari admin.
+- Setelah admin menandai **Lunas** di `/admin/enrollment`, status menjadi **`PAID`** dan halaman booking user berubah jadi **"Mama sudah punya akses ke kelas ini"**.
+
+> **Catatan:** akses konten kelas (menonton modul & membuka materi bagi user ber-status `PAID`) menyusul di fase berikutnya. Fase ini mencakup alur pembelian, konfirmasi pembayaran, dan status akses.
 
 ## Scripts
 
@@ -94,12 +106,13 @@ Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on
 | `/masuk` | Login |
 | `/daftar` | Registrasi (auto sign-in) |
 | `/admin` | Dashboard admin (khusus role `ADMIN`) |
+| `/admin/enrollment` | Kelola pembelian kelas (konfirmasi/batalkan) |
 | `/admin/layanan` | Kelola layanan (daftar, aktif/nonaktif) |
 | `/admin/layanan/baru` | Buat layanan baru |
 | `/admin/layanan/[id]` | Edit layanan |
 | `/admin/layanan/[id]/modul` | Kelola modul kelas digital (khusus kategori `class`) |
 | `/admin/layanan/[id]/modul/[moduleId]` | Edit modul + kelola materi |
-| `/admin/pengaturan` | Setelan estimator (tarif transport) |
+| `/admin/pengaturan` | Setelan estimator (tarif transport) + info pembayaran kelas |
 | `/api/admin/upload` | Unggah video/materi (admin, streaming) |
 | `/api/video/[moduleId]` | Sajikan video modul (admin, HTTP Range) |
 | `/api/material/[id]` | Sajikan materi PDF (admin, HTTP Range) |

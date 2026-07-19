@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Package, Settings } from "lucide-react";
+import { ArrowRight, Package, GraduationCap, Settings } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getPendingCount } from "@/lib/enrollments";
 import {
   Card,
   CardContent,
@@ -11,11 +12,13 @@ import {
 } from "@/components/ui/card";
 
 export default async function AdminDashboardPage() {
-  const [session, totalServices, activeServices] = await Promise.all([
-    auth(),
-    prisma.service.count(),
-    prisma.service.count({ where: { active: true } }),
-  ]);
+  const [session, totalServices, activeServices, pendingEnrollments] =
+    await Promise.all([
+      auth(),
+      prisma.service.count(),
+      prisma.service.count({ where: { active: true } }),
+      getPendingCount(),
+    ]);
 
   const name = session?.user?.name ?? "Admin";
 
@@ -27,9 +30,15 @@ export default async function AdminDashboardPage() {
       Icon: Package,
     },
     {
+      href: "/admin/enrollment",
+      title: "Kelola Enrollment",
+      description: "Konfirmasi pembayaran kelas atau batalkan pembelian.",
+      Icon: GraduationCap,
+    },
+    {
       href: "/admin/pengaturan",
       title: "Pengaturan",
-      description: "Konfigurasi tarif transport dan preferensi klinik.",
+      description: "Konfigurasi tarif transport dan info pembayaran.",
       Icon: Settings,
     },
   ];
@@ -45,7 +54,7 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardDescription>Total Layanan</CardDescription>
@@ -69,11 +78,41 @@ export default async function AdminDashboardPage() {
             Terlihat di halaman publik /layanan.
           </CardContent>
         </Card>
+
+        <Link href="/admin/enrollment?status=PENDING" className="group">
+          <Card
+            className={
+              pendingEnrollments > 0
+                ? "h-full ring-1 ring-amber-500/30 transition-colors hover:bg-muted/50"
+                : "h-full transition-colors hover:bg-muted/50"
+            }
+          >
+            <CardHeader>
+              <CardDescription>Enrollment Menunggu</CardDescription>
+              <CardTitle
+                className={
+                  pendingEnrollments > 0
+                    ? "text-3xl font-semibold tabular-nums text-amber-600 dark:text-amber-400"
+                    : "text-3xl font-semibold tabular-nums"
+                }
+              >
+                {pendingEnrollments}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center gap-1 text-sm text-muted-foreground">
+              Perlu konfirmasi pembayaran
+              <ArrowRight
+                className="size-3.5 transition-transform group-hover:translate-x-0.5"
+                strokeWidth={2}
+              />
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground">Akses cepat</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {links.map(({ href, title, description, Icon }) => (
             <Link key={href} href={href} className="group">
               <Card className="h-full transition-colors hover:bg-muted/50">
