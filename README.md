@@ -77,9 +77,15 @@ Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** me
 - User anonim melihat **gerbang login** (tautan ke `/masuk`), bukan tombol beli.
 - User yang sudah masuk menekan **Beli Kelas** → dibuat **satu** permintaan enrollment berstatus **`PENDING`** (idempoten: membeli/memuat ulang tidak menggandakan baris — dibatasi unik per `user + service`).
 - Panel lalu menampilkan **"Menunggu Konfirmasi Pembayaran"** beserta info transfer (bank/rekening/atas nama) dan tombol **Konfirmasi via WhatsApp** (`wa.me`) untuk mengabari admin.
-- Setelah admin menandai **Lunas** di `/admin/enrollment`, status menjadi **`PAID`** dan halaman booking user berubah jadi **"Mama sudah punya akses ke kelas ini"**.
+- Setelah admin menandai **Lunas** di `/admin/enrollment`, status menjadi **`PAID`** dan halaman booking user berubah jadi **"Mama sudah punya akses ke kelas ini"** dengan tombol **Buka Kelas Saya** menuju `/kelas-saya`.
 
-> **Catatan:** akses konten kelas (menonton modul & membuka materi bagi user ber-status `PAID`) menyusul di fase berikutnya. Fase ini mencakup alur pembelian, konfirmasi pembayaran, dan status akses.
+## Akses Kelas
+
+Setelah pembayaran dikonfirmasi (`PAID`), pembeli membuka kelasnya di **`/kelas-saya`**:
+
+- **`/kelas-saya`** — daftar semua kelas yang sudah dibeli (ber-status `PAID`) milik user. Wajib login (kalau belum, di-redirect ke `/masuk`).
+- **`/kelas-saya/[serviceId]`** — isi kelas: semua modul (urut sesuai `sortOrder`) lengkap dengan pemutar **`<video>`** dan daftar materi (PDF/Video/Tautan) — semua terbuka begitu pembayaran dikonfirmasi. User yang belum `PAID` di-redirect ke halaman detail layanan.
+- File video & materi hanya disajikan lewat route ber-gerbang **`/api/video/[moduleId]`** dan **`/api/material/[id]`** kepada **pembeli kelas (`PAID`)**, **admin**, atau untuk **modul/materi preview** (cuplikan gratis). Selain itu **403**.
 
 ## Scripts
 
@@ -105,6 +111,8 @@ Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** me
 | `/layanan/[id]/booking` | Formulir reservasi (per kategori) |
 | `/masuk` | Login |
 | `/daftar` | Registrasi (auto sign-in) |
+| `/kelas-saya` | Daftar kelas yang sudah dibeli (`PAID`; wajib login) |
+| `/kelas-saya/[serviceId]` | Isi kelas: modul + video + materi (khusus pembeli `PAID`) |
 | `/admin` | Dashboard admin (khusus role `ADMIN`) |
 | `/admin/enrollment` | Kelola pembelian kelas (konfirmasi/batalkan) |
 | `/admin/layanan` | Kelola layanan (daftar, aktif/nonaktif) |
@@ -114,8 +122,8 @@ Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** me
 | `/admin/layanan/[id]/modul/[moduleId]` | Edit modul + kelola materi |
 | `/admin/pengaturan` | Setelan estimator (tarif transport) + info pembayaran kelas |
 | `/api/admin/upload` | Unggah video/materi (admin, streaming) |
-| `/api/video/[moduleId]` | Sajikan video modul (admin, HTTP Range) |
-| `/api/material/[id]` | Sajikan materi PDF (admin, HTTP Range) |
+| `/api/video/[moduleId]` | Sajikan video modul (pembeli `PAID`/admin/preview, HTTP Range) |
+| `/api/material/[id]` | Sajikan materi PDF (pembeli `PAID`/admin/preview, HTTP Range) |
 
 Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
 
