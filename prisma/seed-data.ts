@@ -223,14 +223,7 @@ export const SERVICE_PACKAGES: ServicePackage[] = [
       "Teknik sterilisasi & pencairan ASIP beku bebas bakteri",
       "Formulir 'Jadwal Pumping' kustom kantor"
     ],
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&auto=format&fit=crop&q=80",
-    materials: [
-      { title: "Cuplikan: Mengenal Pumping di Kantor", type: "video", preview: true },
-      { title: "Video 1 · Setup Pojok ASI di Kantor", type: "video" },
-      { title: "Video 2 · Power Pumping Efektif", type: "video" },
-      { title: "Modul PDF · Kalkulator & Jadwal Pumping", type: "pdf" },
-      { title: "Modul PDF · Sterilisasi & Pencairan ASIP", type: "pdf" }
-    ]
+    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&auto=format&fit=crop&q=80"
   },
   {
     id: "kelas_menyusui",
@@ -245,13 +238,6 @@ export const SERVICE_PACKAGES: ServicePackage[] = [
       "Perlengkapan wajib menyusui yang tidak mubazir",
       "E-book panduan menyusui pasca melahirkan"
     ],
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80",
-    materials: [
-      { title: "Cuplikan: Pelekatan Pertama (IMD)", type: "video", preview: true },
-      { title: "Video 1 · Teknik Pelekatan Asimetris", type: "video" },
-      { title: "Video 2 · Pijat Stimulasi Payudara", type: "video" },
-      { title: "Modul PDF · Checklist Perlengkapan Menyusui", type: "pdf" },
-      { title: "E-book · Panduan Menyusui Pasca Melahirkan", type: "pdf" }
-    ]
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80"
   }
 ];

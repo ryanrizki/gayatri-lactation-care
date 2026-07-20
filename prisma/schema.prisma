@@ -20,7 +20,6 @@ model Service {
   description String
   features    String[]
   image       String
-  materials   Json?
   modules     Module[]
   enrollments Enrollment[]
   sortOrder   Int             @default(0)
