@@ -40,7 +40,7 @@ npm test                     # unit (Vitest)
 npm run test:e2e             # E2E (Playwright)
 ```
 
-**Database wajib untuk build & dev.** Halaman `/layanan/[id]` dan `/layanan/[id]/booking` memakai `generateStaticParams`, yang meng-query Postgres saat `next build`. Jadi `npm run build` maupun `npm run dev` butuh `DATABASE_URL` yang bisa dijangkau — jika Postgres mati, build gagal dengan error koneksi Prisma. Pastikan `docker compose up -d` sudah jalan dan data sudah di-seed.
+**Database wajib untuk dev & runtime.** Halaman `/layanan/[id]` dan `/layanan/[id]/booking` bersifat dinamis — meng-query Postgres tiap request (layanan baru muncul tanpa rebuild). Jadi `npm run dev`/`npm start` butuh `DATABASE_URL` yang bisa dijangkau; jika Postgres mati, halaman gagal render dengan error koneksi Prisma. Pastikan `docker compose up -d` sudah jalan dan data sudah di-seed.
 
 `GEMINI_API_KEY` bersifat opsional (isi di `.env`). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
 
