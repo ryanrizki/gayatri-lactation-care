@@ -23,13 +23,18 @@ export const authConfig = {
       return session;
     },
     authorized({ auth, request }) {
-      const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
-      if (!isAdminPath) return true;
-      const role = auth?.user?.role;
-      if (role === "ADMIN") return true;
-      // Logged in but not admin → send home. Not logged in → let Auth.js redirect to signIn (/masuk).
-      if (auth) return Response.redirect(new URL("/", request.nextUrl));
-      return false;
+      const path = request.nextUrl.pathname;
+      if (path.startsWith("/admin")) {
+        const role = auth?.user?.role;
+        if (role === "ADMIN") return true;
+        // Logged in but not admin → send home. Not logged in → let Auth.js redirect to signIn (/masuk).
+        if (auth) return Response.redirect(new URL("/", request.nextUrl));
+        return false;
+      }
+      if (path.startsWith("/kelas-saya")) {
+        return !!auth; // login required; false → /masuk
+      }
+      return true;
     },
   },
 } satisfies NextAuthConfig;

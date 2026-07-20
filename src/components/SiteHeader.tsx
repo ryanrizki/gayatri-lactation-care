@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart, CalendarCheck, UserCircle, LogOut } from "lucide-react";
+import { Heart, CalendarCheck, GraduationCap, UserCircle, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
-const navItems = [
+const baseNavItems = [
   { to: "/", label: "Edu Hub", Icon: Heart, end: true },
   { to: "/layanan", label: "Klinik & Homecare", Icon: CalendarCheck, end: false },
 ];
@@ -15,6 +15,10 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user;
+
+  const navItems = user
+    ? [...baseNavItems, { to: "/kelas-saya", label: "Kelas Saya", Icon: GraduationCap, end: false }]
+    : baseNavItems;
 
   /** react-router `end`: `/` cocok persis; `/layanan` cocok dirinya sendiri + sub-route (per segmen, bukan prefix string). */
   const isActive = (to: string, exact: boolean) =>
@@ -90,11 +94,13 @@ export default function SiteHeader() {
 
         {/* Row 2: full-width segmented nav (mobile only) */}
         <nav className="grid grid-cols-2 gap-2 mt-2.5 md:hidden">
-          {navItems.map(({ to, label, Icon, end }) => (
+          {navItems.map(({ to, label, Icon, end }, idx) => (
             <Link
               key={to}
               href={to}
               className={`min-h-[48px] px-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-center leading-tight cursor-pointer border ${
+                navItems.length % 2 === 1 && idx === navItems.length - 1 ? "col-span-2" : ""
+              } ${
                 isActive(to, end) ? "bg-[#3E2A38] text-white border-[#3E2A38] shadow-sm font-bold" : "bg-[#FFF6FA] text-[#5E4455] border-[#F3D6E2]/70 hover:bg-white"
               }`}
             >

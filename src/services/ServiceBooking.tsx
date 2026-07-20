@@ -205,9 +205,12 @@ export default function ServiceBooking({
                 <p className="text-sm text-[#5E4455] leading-relaxed">
                   Terima kasih ya, Ma. Pembayaran <b className="text-[#3E2A38]">{pkg.name}</b> sudah dikonfirmasi tim kami. Materi &amp; video akan terbuka di halaman Kelas Saya.
                 </p>
-                <div className="w-full min-h-[48px] py-3.5 rounded-full font-bold text-sm flex items-center justify-center gap-2 bg-[#FDEAF2] text-[#B85C8A] border border-[#F3D6E2] cursor-default">
-                  <BookOpenCheck className="w-5 h-5" /> Kelas Saya (segera hadir)
-                </div>
+                <Link
+                  href={`/kelas-saya/${pkg.id}`}
+                  className="w-full bg-[#3E2A38] hover:bg-[#E97FB1] text-white min-h-[48px] py-3.5 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                >
+                  <BookOpenCheck className="w-5 h-5" /> Buka Kelas Saya
+                </Link>
                 <button type="button" onClick={() => router.push("/layanan")} className="w-full text-center min-h-[44px] py-2 text-sm text-[#9C8593] hover:text-[#3E2A38] transition font-bold">
                   Kembali ke Daftar Layanan
                 </button>
