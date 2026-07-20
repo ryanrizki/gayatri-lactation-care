@@ -70,6 +70,14 @@ Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hany
 
 Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
 
+## Detail Kelas Publik
+
+Halaman detail publik **`/layanan/[id]`** untuk layanan kategori **`class`** menampilkan **modul asli** kelas (urut sesuai `sortOrder`), dapat dibuka siapa saja **tanpa login**:
+
+- **Modul preview** (ditandai admin sebagai cuplikan gratis) menampilkan pemutar **`<video>`** yang memutar cuplikan langsung dari route ber-gerbang `/api/video/[moduleId]` — terbuka untuk anon (`200`).
+- **Modul berbayar** tampil **terkunci** (judul + ikon gembok, tanpa elemen video); mencoba mengambil videonya sebagai anon → **403**.
+- Tombol **Beli Kelas** mengarahkan ke `/layanan/[id]/booking` untuk memulai pembelian.
+
 ## Pembelian Kelas
 
 Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** membeli kelas langsung di halaman booking-nya **`/layanan/[id]/booking`**:
@@ -164,3 +172,23 @@ prisma/
   seed.ts               # Skrip seed
   seed-data.ts          # Data challenge untuk seed
 ```
+
+## Status Proyek
+
+**Fitur inti selesai.** Alur kelas online berjalan **end-to-end**:
+
+1. **Admin** menyusun kelas (modul berurutan) dan mengunggah video + materi PDF di module builder.
+2. **User** mendaftar/masuk, lalu **membeli kelas** di halaman booking (enrollment `PENDING` + info transfer).
+3. **Admin** menandai **Lunas** → status `PAID`.
+4. **User** membuka isi kelas di `/kelas-saya/[serviceId]`: modul (urut), pemutar video, dan materi — semua terbuka untuk pembeli `PAID`.
+5. **Detail publik** `/layanan/[id]` menampilkan modul asli dengan **cuplikan gratis** (modul preview) untuk anon; modul berbayar terkunci.
+
+Akses file dijaga route ber-gerbang `/api/video/[moduleId]` & `/api/material/[id]` (pembeli `PAID` / admin / preview; selain itu 403). Terverifikasi oleh 46 unit test (Vitest) dan 29 E2E (Playwright).
+
+### Sisa sebelum produksi
+
+Bukan bagian dari fitur inti, tetapi disarankan sebelum go-live:
+
+- **Rate limiting** pada login/register (mitigasi brute-force).
+- **Reset password mandiri** untuk user.
+- **Domain + HTTPS** (set `AUTH_TRUST_HOST=true` di balik proxy) dan **backup rutin** database + `UPLOAD_DIR`.
