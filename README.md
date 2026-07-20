@@ -1,194 +1,194 @@
 <div align="center">
 
-# 🌸 Gayatri Layanan Laktasi
+# 🌸 Gayatri Lactation Care
 
-**Pendamping perjalanan menyusui Mama** — Edu Hub mandiri, konsultan laktasi, dan pemesanan layanan Klinik & Homecare.
+**A companion for Mama's breastfeeding journey** — self-serve Edu Hub, lactation consultants, and Clinic & Homecare service booking.
 
 </div>
 
-Aplikasi web pendamping laktasi berbahasa Indonesia. Menyatukan edukasi mandiri (Edu Hub), asisten AI "Minbee", dan alur pemesanan layanan (konsultasi, kelas privat, webinar) yang disesuaikan per kategori.
+An Indonesian-language lactation companion web app. It brings together self-serve education (Edu Hub), the "Minbee" AI assistant, and a per-category service booking flow (consultation, private classes, webinars). The user-facing UI is in Indonesian by design (the "Mama" brand); this README and the docs are in English.
 
 ## Tech Stack
 
 - **Next.js** (App Router) + **React 19** + **TypeScript**
-- **Tailwind CSS v4** — styling, palet warm pastel
-- **PostgreSQL 16** + **Prisma 6** — data layanan, challenge, dan setelan estimator
-- **Route Handlers** — API (`/api/chat`, `/api/estimator`)
-- **Google Gemini** (`@google/genai`) — asisten laktasi Minbee
-- **lucide-react** — ikon
+- **Tailwind CSS v4** — styling, warm pastel palette
+- **PostgreSQL 16** + **Prisma 6** — service data, challenges, and estimator settings
+- **Route Handlers** — APIs (`/api/chat`, `/api/estimator`)
+- **Google Gemini** (`@google/genai`) — the Minbee lactation assistant
+- **lucide-react** — icons
 
 ## Run Locally
 
-**Prasyarat:** Node.js, Docker (untuk Postgres lokal)
+**Prerequisites:** Node.js, Docker (for the local Postgres)
 
 ```bash
 npm install
-docker compose up -d          # Postgres 16 di port 5435
-cp .env.example .env          # berisi DATABASE_URL default yang cocok dengan compose
-npx prisma migrate deploy     # terapkan schema (atau `npx prisma migrate dev`)
-npx prisma generate           # generate Prisma Client (jika belum otomatis)
-npm run db:seed               # isi data layanan, challenge, setelan estimator
-npm run db:seed-admin         # buat user admin dari ADMIN_EMAIL/ADMIN_PASSWORD di .env
+docker compose up -d          # Postgres 16 on port 5435
+cp .env.example .env          # holds a default DATABASE_URL matching compose
+npx prisma migrate deploy     # apply the schema (or `npx prisma migrate dev`)
+npx prisma generate           # generate Prisma Client (if not automatic)
+npm run db:seed               # seed services, challenges, estimator settings
+npm run db:seed-admin         # create the admin user from ADMIN_EMAIL/ADMIN_PASSWORD in .env
 npm run dev                   # http://localhost:3000
 ```
 
-Perintah lain:
+Other commands:
 
 ```bash
-npm run build && npm start   # produksi
+npm run build && npm start   # production
 npm test                     # unit (Vitest)
 npm run test:e2e             # E2E (Playwright)
 ```
 
-**Database wajib untuk dev & runtime.** Halaman `/layanan/[id]` dan `/layanan/[id]/booking` bersifat dinamis — meng-query Postgres tiap request (layanan baru muncul tanpa rebuild). Jadi `npm run dev`/`npm start` butuh `DATABASE_URL` yang bisa dijangkau; jika Postgres mati, halaman gagal render dengan error koneksi Prisma. Pastikan `docker compose up -d` sudah jalan dan data sudah di-seed.
+**The database is required for dev & runtime.** The `/layanan/[id]` and `/layanan/[id]/booking` pages are dynamic — they query Postgres on every request (new services appear without a rebuild). So `npm run dev`/`npm start` need a reachable `DATABASE_URL`; if Postgres is down, those pages fail to render with a Prisma connection error. Make sure `docker compose up -d` is running and the data is seeded.
 
-`GEMINI_API_KEY` bersifat opsional (isi di `.env`). Tanpa key, aplikasi tetap jalan — `/api/chat` (Minbee) masuk mode fallback, fitur lain (tracker, kalkulator, pemesanan) berfungsi penuh.
+`GEMINI_API_KEY` is optional (set it in `.env`). Without a key the app still runs — `/api/chat` (Minbee) falls back to canned responses, while the other features (tracker, calculator, booking) work fully.
 
-**`UPLOAD_DIR`** menentukan root penyimpanan file terunggah (video modul & materi PDF), **di luar `public/`**. Default dev **`./uploads`** (sudah di-`.gitignore`, tidak ikut ter-commit). Di produksi (VPS), set ke path persisten di luar repo, mis. `UPLOAD_DIR=/var/lib/gayatri/uploads`, dan pastikan direktori itu writable oleh proses Node serta ikut di-backup. File hanya bisa diambil lewat route ber-gerbang admin `/api/video/[moduleId]` & `/api/material/[id]` (lihat bagian Admin).
+**`UPLOAD_DIR`** sets the storage root for uploaded files (module videos & PDF materials), **outside `public/`**. The dev default is **`./uploads`** (already in `.gitignore`, never committed). In production (VPS), point it at a persistent path outside the repo, e.g. `UPLOAD_DIR=/var/lib/gayatri/uploads`, and make sure that directory is writable by the Node process and included in backups. Files are only retrievable through the admin-gated routes `/api/video/[moduleId]` & `/api/material/[id]` (see the Admin section).
 
-## Autentikasi
+## Authentication
 
-Autentikasi memakai **Auth.js v5** (credentials provider, password argon2id, sesi JWT).
+Authentication uses **Auth.js v5** (credentials provider, argon2id password hashing, JWT sessions).
 
-- **`AUTH_SECRET` wajib** ada di `.env` untuk menandatangani sesi JWT. Generate dengan `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` (lihat `.env.example`).
-- **Admin** dibuat sekali via `npm run db:seed-admin`, memakai `ADMIN_EMAIL` dan `ADMIN_PASSWORD` dari `.env`. Ganti nilai default sebelum produksi.
-- **User** mendaftar sendiri di **`/daftar`** (langsung otomatis masuk) dan login di **`/masuk`**. Registrasi selalu membuat akun role `USER`; role `ADMIN` hanya lewat seed.
+- **`AUTH_SECRET` is required** in `.env` to sign JWT sessions. Generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` (see `.env.example`).
+- **The admin** is created once via `npm run db:seed-admin`, using `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `.env`. Change the defaults before production.
+- **Users** self-register at **`/daftar`** (which signs them in automatically) and log in at **`/masuk`**. Registration always creates a `USER`-role account; the `ADMIN` role is only granted via seeding.
 
-> **Catatan produksi:** di balik proxy/hosting (mis. Cloud Run), Auth.js butuh host tepercaya — set `AUTH_TRUST_HOST=true` di environment saat menjalankan `next start`, jika tidak endpoint `/api/auth/*` akan menolak permintaan (`UntrustedHost`). Mode `next dev` sudah otomatis memercayai localhost.
+> **Production note:** behind a proxy/host (e.g. Cloud Run), Auth.js needs a trusted host — set `AUTH_TRUST_HOST=true` in the environment when running `next start`, otherwise the `/api/auth/*` endpoints reject requests (`UntrustedHost`). `next dev` already trusts localhost automatically.
 
 ## Admin
 
-Panel admin melindungi seluruh path `/admin/*` lewat middleware Auth.js — hanya akun role `ADMIN` yang boleh masuk (anon diarahkan ke `/masuk`, user biasa diarahkan ke `/`).
+The admin panel protects every `/admin/*` path via Auth.js middleware — only `ADMIN`-role accounts get in (anon is redirected to `/masuk`, regular users to `/`).
 
-- **Buat admin:** jalankan `npm run db:seed-admin` (upsert idempoten dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env`). Ganti kredensial default sebelum produksi.
-- **Masuk:** login di **`/masuk`** memakai kredensial admin, lalu buka **`/admin`** (dashboard).
-- **Kelola layanan** di **`/admin/layanan`** — buat (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), dan aktif/nonaktifkan lewat toggle. Perubahan harga/detail langsung ter-reflect di halaman publik `/layanan`.
-- **Kelola modul kelas** — khusus layanan kategori `class`, susun materi kelas digital di **`/admin/layanan/[id]/modul`**: tambah modul berurutan (Naik/Turun untuk reorder), kelola materi per modul di **`/admin/layanan/[id]/modul/[moduleId]`** (tipe PDF/Video/Tautan), dan tandai modul/materi sebagai cuplikan gratis (preview). Layanan non-kelas (konsultasi) menampilkan "bukan kelas digital" dan tidak punya modul.
-- **Unggah video & materi** — di module builder, admin mengunggah video modul (MP4/WebM) dan berkas materi (PDF) langsung lewat form. File **disimpan di luar `public/`** (di `UPLOAD_DIR`, lihat di bawah) dan **tidak** disajikan sebagai aset statis. Pengambilan lewat route ber-gerbang admin **`/api/video/[moduleId]`** dan **`/api/material/[id]`** yang mendukung HTTP Range (seek video / streaming parsial). Batas ukuran: **video 500 MB**, **PDF 20 MB**.
-- **Kelola pembelian kelas (enrollment)** di **`/admin/enrollment`** — daftar semua pembelian kelas dengan filter status (`Menunggu`/`Lunas`/`Dibatalkan`). Setelah user transfer & konfirmasi, admin klik **Tandai Lunas** (→ `PAID`, mencatat admin pengonfirmasi) atau **Batalkan** (→ `CANCELLED`). Jumlah pembelian yang masih menunggu tampil di dashboard `/admin`.
-- **Setelan estimator & info pembayaran** di **`/admin/pengaturan`** — atur radius bebas biaya, tarif per km, dan biaya transport dasar (kalkulator Homecare), serta **info pembayaran kelas** (nama bank, no. rekening, atas nama, nomor WhatsApp) yang ditampilkan ke user saat menunggu konfirmasi.
+- **Create an admin:** run `npm run db:seed-admin` (an idempotent upsert from `ADMIN_EMAIL`/`ADMIN_PASSWORD` in `.env`). Change the default credentials before production.
+- **Sign in:** log in at **`/masuk`** with the admin credentials, then open **`/admin`** (dashboard).
+- **Manage services** at **`/admin/layanan`** — create (`/admin/layanan/baru`), edit (`/admin/layanan/[id]`), and enable/disable via a toggle. Price/detail changes reflect immediately on the public `/layanan` pages.
+- **Manage class modules** — only for `class`-category services, build the digital-class content at **`/admin/layanan/[id]/modul`**: add ordered modules (Naik/Turun to reorder), manage per-module materials at **`/admin/layanan/[id]/modul/[moduleId]`** (PDF/Video/Link types), and mark a module/material as a free preview. Non-class services (consultation) show "bukan kelas digital" and have no modules.
+- **Upload videos & materials** — in the module builder, the admin uploads module videos (MP4/WebM) and material files (PDF) directly through the form. Files are **stored outside `public/`** (in `UPLOAD_DIR`, see above) and are **not** served as static assets. Retrieval goes through the admin-gated routes **`/api/video/[moduleId]`** and **`/api/material/[id]`**, which support HTTP Range (video seeking / partial streaming). Size limits: **video 500 MB**, **PDF 20 MB**.
+- **Manage class purchases (enrollments)** at **`/admin/enrollment`** — list every class purchase with a status filter (`Menunggu`/`Lunas`/`Dibatalkan`). After a user transfers and confirms, the admin clicks **Tandai Lunas** (→ `PAID`, recording the confirming admin) or **Batalkan** (→ `CANCELLED`). The count of still-pending purchases shows on the `/admin` dashboard.
+- **Estimator settings & payment info** at **`/admin/pengaturan`** — set the free-of-charge radius, per-km rate, and base transport fee (the Homecare calculator), plus the **class payment info** (bank name, account number, account holder, WhatsApp number) shown to users while awaiting confirmation.
 
-Halaman detail layanan **`/layanan/[id]` di-render dinamis** (server-rendered on demand), sehingga layanan baru yang dibuat admin langsung muncul dan bisa dibuka publik **tanpa perlu build ulang**.
+The service detail page **`/layanan/[id]` is rendered dynamically** (server-rendered on demand), so a new service created by the admin appears and is publicly reachable **without a rebuild**.
 
-## Detail Kelas Publik
+## Public Class Detail
 
-Halaman detail publik **`/layanan/[id]`** untuk layanan kategori **`class`** menampilkan **modul asli** kelas (urut sesuai `sortOrder`), dapat dibuka siapa saja **tanpa login**:
+The public detail page **`/layanan/[id]`** for `class`-category services shows the class's **real modules** (ordered by `sortOrder`) and is open to anyone **without login**:
 
-- **Modul preview** (ditandai admin sebagai cuplikan gratis) menampilkan pemutar **`<video>`** yang memutar cuplikan langsung dari route ber-gerbang `/api/video/[moduleId]` — terbuka untuk anon (`200`).
-- **Modul berbayar** tampil **terkunci** (judul + ikon gembok, tanpa elemen video); mencoba mengambil videonya sebagai anon → **403**.
-- Tombol **Beli Kelas** mengarahkan ke `/layanan/[id]/booking` untuk memulai pembelian.
+- **Preview modules** (marked as a free preview by the admin) show a **`<video>`** player that streams the clip directly from the gated `/api/video/[moduleId]` route — open to anon (`200`).
+- **Paid modules** appear **locked** (title + lock icon, no video element); fetching their video as anon → **403**.
+- The **"Beli Kelas"** button leads to `/layanan/[id]/booking` to start a purchase.
 
-## Pembelian Kelas
+## Class Purchase
 
-Untuk layanan kategori **`class`** (kelas digital), user yang **sudah masuk** membeli kelas langsung di halaman booking-nya **`/layanan/[id]/booking`**:
+For `class`-category services (digital classes), a **logged-in** user buys the class right on its booking page **`/layanan/[id]/booking`**:
 
-- User anonim melihat **gerbang login** (tautan ke `/masuk`), bukan tombol beli.
-- User yang sudah masuk menekan **Beli Kelas** → dibuat **satu** permintaan enrollment berstatus **`PENDING`** (idempoten: membeli/memuat ulang tidak menggandakan baris — dibatasi unik per `user + service`).
-- Panel lalu menampilkan **"Menunggu Konfirmasi Pembayaran"** beserta info transfer (bank/rekening/atas nama) dan tombol **Konfirmasi via WhatsApp** (`wa.me`) untuk mengabari admin.
-- Setelah admin menandai **Lunas** di `/admin/enrollment`, status menjadi **`PAID`** dan halaman booking user berubah jadi **"Mama sudah punya akses ke kelas ini"** dengan tombol **Buka Kelas Saya** menuju `/kelas-saya`.
+- Anonymous users see a **login gate** (a link to `/masuk`), not a buy button.
+- A logged-in user clicks **"Beli Kelas"** → **one** enrollment request is created with status **`PENDING`** (idempotent: buying/reloading does not duplicate rows — constrained unique per `user + service`).
+- The panel then shows **"Menunggu Konfirmasi Pembayaran"** along with transfer info (bank/account/holder) and a **Konfirmasi via WhatsApp** button (`wa.me`) to notify the admin.
+- Once the admin marks it **Lunas** at `/admin/enrollment`, the status becomes **`PAID`** and the user's booking page switches to **"Mama sudah punya akses ke kelas ini"** with a **Buka Kelas Saya** button to `/kelas-saya`.
 
-## Akses Kelas
+## Class Access
 
-Setelah pembayaran dikonfirmasi (`PAID`), pembeli membuka kelasnya di **`/kelas-saya`**:
+After payment is confirmed (`PAID`), the buyer opens their class at **`/kelas-saya`**:
 
-- **`/kelas-saya`** — daftar semua kelas yang sudah dibeli (ber-status `PAID`) milik user. Wajib login (kalau belum, di-redirect ke `/masuk`).
-- **`/kelas-saya/[serviceId]`** — isi kelas: semua modul (urut sesuai `sortOrder`) lengkap dengan pemutar **`<video>`** dan daftar materi (PDF/Video/Tautan) — semua terbuka begitu pembayaran dikonfirmasi. User yang belum `PAID` di-redirect ke halaman detail layanan.
-- File video & materi hanya disajikan lewat route ber-gerbang **`/api/video/[moduleId]`** dan **`/api/material/[id]`** kepada **pembeli kelas (`PAID`)**, **admin**, atau untuk **modul/materi preview** (cuplikan gratis). Selain itu **403**.
+- **`/kelas-saya`** — a list of all the user's purchased (`PAID`) classes. Login required (otherwise redirected to `/masuk`).
+- **`/kelas-saya/[serviceId]`** — the class content: all modules (ordered by `sortOrder`) with a **`<video>`** player and the material list (PDF/Video/Link) — all unlocked once payment is confirmed. A user who is not `PAID` is redirected to the service detail page.
+- Video & material files are only served through the gated routes **`/api/video/[moduleId]`** and **`/api/material/[id]`** to **class buyers (`PAID`)**, **admins**, or for **preview modules/materials** (free clips). Everything else → **403**.
 
 ## Scripts
 
-| Perintah | Fungsi |
-|----------|--------|
-| `npm run dev` | Dev server (`next dev`) di port 3000 |
-| `npm run build` | Build produksi (`next build`) |
-| `npm start` | Jalankan hasil build produksi (`next start`) |
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Dev server (`next dev`) on port 3000 |
+| `npm run build` | Production build (`next build`) |
+| `npm start` | Run the production build (`next start`) |
 | `npm run lint` | Type-check (`tsc --noEmit`) |
-| `npm test` | Unit test (Vitest) |
-| `npm run test:e2e` | End-to-end test (Playwright) |
-| `npm run db:seed` | Isi database dengan data awal (`tsx prisma/seed.ts`) |
-| `npm run db:seed-admin` | Buat/update user admin dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` |
-| `npm run db:reset` | Reset + migrasi ulang database (`prisma migrate reset`) |
+| `npm test` | Unit tests (Vitest) |
+| `npm run test:e2e` | End-to-end tests (Playwright) |
+| `npm run db:seed` | Seed the database with initial data (`tsx prisma/seed.ts`) |
+| `npm run db:seed-admin` | Create/update the admin user from `ADMIN_EMAIL`/`ADMIN_PASSWORD` |
+| `npm run db:reset` | Reset + re-migrate the database (`prisma migrate reset`) |
 
 ## Routes
 
-| URL | Halaman |
-|-----|---------|
+| URL | Page |
+|-----|------|
 | `/` | Edu Hub (Dashboard) |
-| `/layanan` | Daftar layanan |
-| `/layanan/[id]` | Detail layanan (tampilan per kategori) |
-| `/layanan/[id]/booking` | Formulir reservasi (per kategori) |
+| `/layanan` | Service list |
+| `/layanan/[id]` | Service detail (per-category view) |
+| `/layanan/[id]/booking` | Booking form (per category) |
 | `/masuk` | Login |
-| `/daftar` | Registrasi (auto sign-in) |
-| `/kelas-saya` | Daftar kelas yang sudah dibeli (`PAID`; wajib login) |
-| `/kelas-saya/[serviceId]` | Isi kelas: modul + video + materi (khusus pembeli `PAID`) |
-| `/admin` | Dashboard admin (khusus role `ADMIN`) |
-| `/admin/enrollment` | Kelola pembelian kelas (konfirmasi/batalkan) |
-| `/admin/layanan` | Kelola layanan (daftar, aktif/nonaktif) |
-| `/admin/layanan/baru` | Buat layanan baru |
-| `/admin/layanan/[id]` | Edit layanan |
-| `/admin/layanan/[id]/modul` | Kelola modul kelas digital (khusus kategori `class`) |
-| `/admin/layanan/[id]/modul/[moduleId]` | Edit modul + kelola materi |
-| `/admin/pengaturan` | Setelan estimator (tarif transport) + info pembayaran kelas |
-| `/api/admin/upload` | Unggah video/materi (admin, streaming) |
-| `/api/video/[moduleId]` | Sajikan video modul (pembeli `PAID`/admin/preview, HTTP Range) |
-| `/api/material/[id]` | Sajikan materi PDF (pembeli `PAID`/admin/preview, HTTP Range) |
+| `/daftar` | Registration (auto sign-in) |
+| `/kelas-saya` | List of purchased classes (`PAID`; login required) |
+| `/kelas-saya/[serviceId]` | Class content: modules + video + materials (`PAID` buyers only) |
+| `/admin` | Admin dashboard (`ADMIN` role only) |
+| `/admin/enrollment` | Manage class purchases (confirm/cancel) |
+| `/admin/layanan` | Manage services (list, enable/disable) |
+| `/admin/layanan/baru` | Create a new service |
+| `/admin/layanan/[id]` | Edit a service |
+| `/admin/layanan/[id]/modul` | Manage digital-class modules (`class` category only) |
+| `/admin/layanan/[id]/modul/[moduleId]` | Edit a module + manage materials |
+| `/admin/pengaturan` | Estimator settings (transport fee) + class payment info |
+| `/api/admin/upload` | Upload video/material (admin, streaming) |
+| `/api/video/[moduleId]` | Serve a module video (`PAID` buyer/admin/preview, HTTP Range) |
+| `/api/material/[id]` | Serve a PDF material (`PAID` buyer/admin/preview, HTTP Range) |
 
-Kategori layanan: **Homecare** (jarak + transport), **Klinik**, **Kelas Privat** (online/offline), **Webinar** (jadwal tetap + email).
+Service categories: **Homecare** (distance + transport), **Clinic**, **Private Class** (online/offline), **Webinar** (fixed schedule + email).
 
-## Struktur
+## Structure
 
 ```
 src/
   app/                  # Next.js App Router
     layout.tsx          # Root layout (header/footer)
     page.tsx            # Edu Hub (Dashboard)
-    globals.css         # Stylesheet global
-    layanan/            # Daftar + detail + booking layanan
-      layout.tsx        # Layout + state bersama (React Context)
-      page.tsx          # Daftar layanan
-      [id]/page.tsx     # Detail tertarget per kategori
-      [id]/booking/page.tsx  # Reservasi tertarget per kategori
+    globals.css         # Global stylesheet
+    layanan/            # Service list + detail + booking
+      layout.tsx        # Layout + shared state (React Context)
+      page.tsx          # Service list
+      [id]/page.tsx     # Per-category targeted detail
+      [id]/booking/page.tsx  # Per-category targeted booking
     api/
-      chat/route.ts     # API Gemini (Minbee)
-      estimator/route.ts # API kalkulasi tarif
+      chat/route.ts     # Gemini API (Minbee)
+      estimator/route.ts # Fee calculation API
   components/
-    Dashboard.tsx       # Edu Hub: hero, program, diagnostik, testimoni
-  services/             # Alur Klinik & Homecare
-    ServiceList.tsx     # Daftar layanan
-    ServiceDetail.tsx   # Detail tertarget per kategori
-    ServiceBooking.tsx  # Reservasi tertarget per kategori
-    serviceConfig.ts    # Deskriptor kategori
-    estimator.ts        # Fungsi murni kalkulasi tarif
-    useEstimate.ts      # Hook kalkulasi tarif
-  lib/                  # Query layer (server-only, pakai Prisma)
+    Dashboard.tsx       # Edu Hub: hero, programs, diagnostics, testimonials
+  services/             # Clinic & Homecare flow
+    ServiceList.tsx     # Service list
+    ServiceDetail.tsx   # Per-category targeted detail
+    ServiceBooking.tsx  # Per-category targeted booking
+    serviceConfig.ts    # Category descriptors
+    estimator.ts        # Pure fee-calculation function
+    useEstimate.ts      # Fee-calculation hook
+  lib/                  # Query layer (server-only, uses Prisma)
     db.ts               # Prisma Client singleton
-    services.ts         # Query layanan
-    challenges.ts       # Query challenge
-    settings.ts         # Setelan estimator
+    services.ts         # Service queries
+    challenges.ts       # Challenge queries
+    settings.ts         # Estimator settings
   types.ts
 prisma/
-  schema.prisma         # Model Service, Challenge, Setting
-  migrations/           # Migrasi SQL
-  seed.ts               # Skrip seed
-  seed-data.ts          # Data challenge untuk seed
+  schema.prisma         # Service, Challenge, Setting models
+  migrations/           # SQL migrations
+  seed.ts               # Seed script
+  seed-data.ts          # Challenge data for seeding
 ```
 
-## Status Proyek
+## Project Status
 
-**Fitur inti selesai.** Alur kelas online berjalan **end-to-end**:
+**Core features complete.** The online-class flow works **end-to-end**:
 
-1. **Admin** menyusun kelas (modul berurutan) dan mengunggah video + materi PDF di module builder.
-2. **User** mendaftar/masuk, lalu **membeli kelas** di halaman booking (enrollment `PENDING` + info transfer).
-3. **Admin** menandai **Lunas** → status `PAID`.
-4. **User** membuka isi kelas di `/kelas-saya/[serviceId]`: modul (urut), pemutar video, dan materi — semua terbuka untuk pembeli `PAID`.
-5. **Detail publik** `/layanan/[id]` menampilkan modul asli dengan **cuplikan gratis** (modul preview) untuk anon; modul berbayar terkunci.
+1. **The admin** builds a class (ordered modules) and uploads videos + PDF materials in the module builder.
+2. **A user** registers/logs in, then **buys a class** on the booking page (a `PENDING` enrollment + transfer info).
+3. **The admin** marks it **Lunas** → status `PAID`.
+4. **The user** opens the class content at `/kelas-saya/[serviceId]`: modules (ordered), a video player, and materials — all unlocked for `PAID` buyers.
+5. **The public detail** `/layanan/[id]` shows the real modules with a **free preview** (preview modules) for anon; paid modules stay locked.
 
-Akses file dijaga route ber-gerbang `/api/video/[moduleId]` & `/api/material/[id]` (pembeli `PAID` / admin / preview; selain itu 403). Terverifikasi oleh 46 unit test (Vitest) dan 29 E2E (Playwright).
+File access is guarded by the gated `/api/video/[moduleId]` & `/api/material/[id]` routes (`PAID` buyer / admin / preview; otherwise 403). Verified by 46 unit tests (Vitest) and 29 E2E tests (Playwright).
 
-### Sisa sebelum produksi
+### Remaining before production
 
-Bukan bagian dari fitur inti, tetapi disarankan sebelum go-live:
+Not part of the core features, but recommended before go-live:
 
-- **Rate limiting** pada login/register (mitigasi brute-force).
-- **Reset password mandiri** untuk user.
-- **Domain + HTTPS** (set `AUTH_TRUST_HOST=true` di balik proxy) dan **backup rutin** database + `UPLOAD_DIR`.
+- **Rate limiting** on login/register (brute-force mitigation).
+- **Self-serve password reset** for users.
+- **Domain + HTTPS** (set `AUTH_TRUST_HOST=true` behind a proxy) and **regular backups** of the database + `UPLOAD_DIR`.
