@@ -9,7 +9,6 @@ function toPackage(row: {
   description: string;
   features: string[];
   image: string;
-  materials: unknown;
 }): ServicePackage {
   return {
     id: row.id,
@@ -19,7 +18,6 @@ function toPackage(row: {
     description: row.description,
     features: row.features,
     image: row.image,
-    materials: (row.materials as ServicePackage["materials"]) ?? undefined,
   };
 }
 

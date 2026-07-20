@@ -1,24 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getKind, KIND_META } from "./serviceConfig";
 import { useEstimate } from "./useEstimate";
 import { useServices } from "./ServicesContext";
 import { formatIDR } from "@/lib/format";
 import type { ServicePackage } from "@/types";
-import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, ShieldCheck, PlayCircle, Lock, Video, FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, ClipboardCheck, Sparkles, MapPin, CheckCircle, ShieldCheck, Lock, Video, FileText } from "lucide-react";
 
-export default function ServiceDetail({ pkg }: { pkg: ServicePackage }) {
+type ModuleForDetail = {
+  id: string;
+  title: string;
+  description: string;
+  sortOrder: number;
+  videoPath: string | null;
+  isPreview: boolean;
+  materials: { id: string; title: string; type: "PDF" | "VIDEO" | "LINK"; isPreview: boolean; filePath: string | null }[];
+};
+
+export default function ServiceDetail({ pkg, modules = [] }: { pkg: ServicePackage; modules?: ModuleForDetail[] }) {
   const router = useRouter();
   const { setIsHomecare, distanceKm, setDistanceKm } = useServices();
-  const [showPreviewNote, setShowPreviewNote] = useState(false);
 
   const kind = getKind(pkg);
   const meta = KIND_META[kind];
   const { estimate } = useEstimate(pkg.id, kind === "homecare", distanceKm);
-
-  const materials = pkg.materials ?? [];
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -70,50 +76,53 @@ export default function ServiceDetail({ pkg }: { pkg: ServicePackage }) {
         <div className="lg:col-span-5 p-5 sm:p-6 md:p-8 space-y-6 bg-[#FEF7FB]/50 flex flex-col justify-between">
           <div className="space-y-6">
             {meta.isDigital ? (
-              /* ===== KELAS DIGITAL: mock video + locked materials ===== */
+              /* ===== KELAS DIGITAL: modul asli + cuplikan gratis ===== */
               <div className="space-y-5">
                 <div className="space-y-1">
                   <h3 className="text-base font-bold text-[#3E2A38] flex items-center gap-2">
                     <Video className="w-5 h-5 text-[#D85C99]" /> Isi Kelas Digital
                   </h3>
                   <p className="text-sm text-[#5E4455] leading-relaxed">
-                    Materi &amp; video bisa Mama akses kapan saja setelah pembelian.
+                    Tonton cuplikan gratis di bawah. Semua modul &amp; materi terbuka setelah Mama membeli kelas.
                   </p>
                 </div>
 
-                {/* Mock video preview */}
-                <button
-                  type="button"
-                  onClick={() => setShowPreviewNote((s) => !s)}
-                  className="relative block w-full rounded-2xl overflow-hidden border border-[#F3D6E2] group cursor-pointer"
-                  aria-label="Putar cuplikan"
-                >
-                  <img src={pkg.image} alt="Cuplikan kelas" className="w-full h-40 object-cover" />
-                  <span className="absolute inset-0 bg-[#2A1C26]/35 flex items-center justify-center">
-                    <PlayCircle className="w-14 h-14 text-white/95 group-hover:scale-110 transition-transform" />
-                  </span>
-                  <span className="absolute top-2 left-2 text-xs font-bold px-2.5 py-1 rounded-full bg-white/90 text-[#D85C99] border border-[#F8C9DD]">
-                    Cuplikan Gratis
-                  </span>
-                </button>
-                {showPreviewNote && (
-                  <p className="text-sm text-[#9C8593] -mt-2">Cuplikan contoh — video penuh terbuka setelah pembelian ya, Ma.</p>
+                {modules.length === 0 ? (
+                  <p className="text-sm text-[#9C8593]">Detail kelas segera hadir ya, Ma. 🌸</p>
+                ) : (
+                  <ul className="space-y-3">
+                    {modules.map((m, idx) => (
+                      <li key={m.id} className="p-3 bg-white border border-[#F3D6E2]/70 rounded-2xl space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#9C8593]">Modul {idx + 1}</span>
+                          {m.isPreview
+                            ? <span className="text-xs font-bold text-[#7BA86F] bg-[#7BA86F]/12 px-2 py-0.5 rounded-full">Cuplikan Gratis</span>
+                            : <Lock className="w-3.5 h-3.5 text-[#9C8593]" aria-label="Terkunci" />}
+                        </div>
+                        <p className="text-sm font-semibold text-[#3E2A38]">{m.title}</p>
+                        {m.isPreview && m.videoPath && (
+                          <video controls preload="metadata" src={`/api/video/${m.id}`} className="w-full rounded-xl border border-[#F3D6E2]" />
+                        )}
+                        {m.materials.length > 0 && (
+                          <ul className="space-y-1.5 pt-1">
+                            {m.materials.map((mat) => {
+                              const open = m.isPreview || mat.isPreview;
+                              return (
+                                <li key={mat.id} className="flex items-center gap-2 text-sm text-[#5E4455]">
+                                  <FileText className="w-4 h-4 text-[#D85C99] shrink-0" />
+                                  {open && mat.filePath
+                                    ? <a href={mat.type === "LINK" ? (mat.filePath ?? "#") : `/api/material/${mat.id}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#3E2A38]">{mat.title}</a>
+                                    : <span className="flex-1">{mat.title}</span>}
+                                  {!open && <Lock className="w-3.5 h-3.5 text-[#9C8593] shrink-0" aria-label="Terkunci" />}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 )}
-
-                {/* Materials list */}
-                <ul className="space-y-2.5">
-                  {materials.map((m, idx) => (
-                    <li key={idx} className="flex items-center gap-3 p-3 bg-white border border-[#F3D6E2]/70 rounded-2xl">
-                      {m.type === "video"
-                        ? <Video className="w-5 h-5 text-[#D85C99] shrink-0" />
-                        : <FileText className="w-5 h-5 text-[#D85C99] shrink-0" />}
-                      <span className="text-sm text-[#3E2A38] flex-1 leading-snug">{m.title}</span>
-                      {m.preview
-                        ? <span className="text-xs font-bold text-[#7BA86F] bg-[#7BA86F]/12 px-2 py-0.5 rounded-full shrink-0">Preview</span>
-                        : <Lock className="w-4 h-4 text-[#9C8593] shrink-0" aria-label="Terkunci" />}
-                    </li>
-                  ))}
-                </ul>
 
                 {/* Price box */}
                 <div className="bg-[#FDEAF2] border border-[#F8C9DD] p-5 rounded-2xl flex items-center justify-between">

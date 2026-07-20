@@ -21,7 +21,6 @@ async function main() {
         description: pkg.description,
         features: pkg.features,
         image: pkg.image,
-        materials: (pkg.materials as unknown as Prisma.InputJsonValue) ?? undefined,
         sortOrder: i,
       },
       create: {
@@ -32,7 +31,6 @@ async function main() {
         description: pkg.description,
         features: pkg.features,
         image: pkg.image,
-        materials: (pkg.materials as unknown as Prisma.InputJsonValue) ?? undefined,
         sortOrder: i,
       },
     });
