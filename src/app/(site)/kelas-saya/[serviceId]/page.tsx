@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  PlayCircle,
-  FileText,
-  Video,
-  ExternalLink,
-  Download,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, PlayCircle, Sparkles } from "lucide-react";
 import { auth } from "@/auth";
 import { hasPaidEnrollment } from "@/lib/access";
 import { getService } from "@/lib/services";
 import { getModulesForService } from "@/lib/modules-admin";
+import ModuleMaterials from "@/components/kelas/ModuleMaterials";
 
 export default async function KelasContentPage({
   params,
@@ -32,12 +25,6 @@ export default async function KelasContentPage({
   if (!service) notFound();
 
   const modules = await getModulesForService(serviceId);
-
-  const typeBadge: Record<string, { label: string; Icon: typeof FileText }> = {
-    PDF: { label: "PDF", Icon: FileText },
-    VIDEO: { label: "Video", Icon: Video },
-    LINK: { label: "Tautan", Icon: ExternalLink },
-  };
 
   return (
     <div className="space-y-6 animate-fadeIn max-w-4xl mx-auto">
@@ -112,43 +99,7 @@ export default async function KelasContentPage({
 
               {/* Materials */}
               {mod.materials.length > 0 && (
-                <ul className="space-y-2.5">
-                  {mod.materials.map((mat) => {
-                    const badge = typeBadge[mat.type] ?? typeBadge.LINK;
-                    const isLink = mat.type === "LINK";
-                    const href = isLink
-                      ? (mat.filePath ?? "#")
-                      : `/api/material/${mat.id}`;
-                    const ActionIcon = isLink ? ExternalLink : Download;
-                    const actionLabel = isLink ? "Buka" : "Buka / Unduh";
-                    return (
-                      <li key={mat.id}>
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 min-h-[56px] px-4 py-3 rounded-2xl bg-[#FFF6FA] border border-[#F3D6E2] hover:bg-white hover:border-[#F8B6D2] transition group"
-                        >
-                          <span className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[#F3D6E2] text-[#D85C99]">
-                            <badge.Icon className="w-4 h-4" />
-                          </span>
-                          <span className="flex-1 min-w-0">
-                            <span className="block text-sm font-bold text-[#3E2A38] leading-snug truncate">
-                              {mat.title}
-                            </span>
-                            <span className="text-xs font-semibold text-[#9C8593]">
-                              {badge.label}
-                            </span>
-                          </span>
-                          <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-[#B85C8A] group-hover:text-[#D85C99] transition">
-                            <ActionIcon className="w-4 h-4" />
-                            <span className="hidden sm:inline">{actionLabel}</span>
-                          </span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <ModuleMaterials materials={mod.materials} />
               )}
 
               {/* Module with neither video nor materials */}
