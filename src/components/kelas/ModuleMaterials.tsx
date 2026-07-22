@@ -34,15 +34,15 @@ export default function ModuleMaterials({ materials }: { materials: Material[] }
 
         return (
           <li key={mat.id}>
-            <div className="flex items-center gap-3 min-h-[56px] px-4 py-3 rounded-2xl bg-[#FFF6FA] border border-[#F3D6E2]">
-              <span className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[#F3D6E2] text-[#D85C99]">
+            <div className="flex items-center gap-3 min-h-[56px] px-4 py-3 rounded-2xl bg-muted border border-border">
+              <span className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-xl bg-card border border-border text-primary">
                 <badge.Icon className="w-4 h-4" />
               </span>
               <span className="flex-1 min-w-0">
-                <span className="block text-sm font-bold text-[#3E2A38] leading-snug truncate">
+                <span className="block text-sm font-bold text-foreground leading-snug truncate">
                   {mat.title}
                 </span>
-                <span className="text-xs font-semibold text-[#9C8593]">{badge.label}</span>
+                <span className="text-xs font-semibold text-muted-foreground">{badge.label}</span>
               </span>
 
               {isPdf ? (
@@ -51,7 +51,7 @@ export default function ModuleMaterials({ materials }: { materials: Material[] }
                     type="button"
                     onClick={() => setOpenId(isOpen ? null : mat.id)}
                     aria-expanded={isOpen}
-                    className="inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-xs font-bold text-white bg-[#3E2A38] hover:bg-[#E97FB1] transition"
+                    className="inline-flex items-center gap-1.5 min-h-[44px] px-3.5 rounded-full text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition"
                   >
                     {isOpen ? <X className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
                     <span className="hidden sm:inline">{isOpen ? "Tutup" : "Baca"}</span>
@@ -59,7 +59,7 @@ export default function ModuleMaterials({ materials }: { materials: Material[] }
                   <a
                     href={href}
                     download
-                    className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-full text-xs font-bold text-[#B85C8A] hover:text-[#D85C99] transition"
+                    className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-full text-xs font-bold text-muted-foreground hover:text-foreground transition"
                   >
                     <Download className="w-4 h-4" />
                     <span className="hidden sm:inline">Unduh</span>
@@ -70,7 +70,7 @@ export default function ModuleMaterials({ materials }: { materials: Material[] }
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 inline-flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-bold text-[#B85C8A] hover:text-[#D85C99] transition"
+                  className="shrink-0 inline-flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-bold text-muted-foreground hover:text-foreground transition"
                 >
                   {isLink ? <ExternalLink className="w-4 h-4" /> : <Download className="w-4 h-4" />}
                   <span className="hidden sm:inline">Buka</span>

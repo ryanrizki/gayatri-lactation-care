@@ -88,7 +88,7 @@ async function loginAsUser(page: Page, email: string) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(USER_PASSWORD);
   await page.locator("form").getByRole("button", { name: "Masuk" }).click();
-  await page.waitForURL("http://localhost:3000/");
+  await page.waitForURL("**/kelas-saya");
 }
 
 // Copy a fixture into UPLOAD_DIR/<subdir>/<uuid><ext> and return the relative
