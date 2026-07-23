@@ -16,9 +16,7 @@ export default function SiteHeader() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const navItems = user
-    ? [...baseNavItems, { to: "/kelas-saya", label: "Kelas Saya", Icon: GraduationCap, end: false }]
-    : baseNavItems;
+  const navItems = baseNavItems;
 
   /** react-router `end`: `/` cocok persis; `/layanan` cocok dirinya sendiri + sub-route (per segmen, bukan prefix string). */
   const isActive = (to: string, exact: boolean) =>
@@ -72,6 +70,13 @@ export default function SiteHeader() {
                 <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#3E2A38] bg-[#FCE9F1] border border-[#F3D6E2] rounded-full px-3 min-h-[40px]">
                   <UserCircle className="w-4 h-4 text-[#D85C99]" /> {user.name?.split(" ")[0]}
                 </span>
+                <Link
+                  href="/kelas-saya"
+                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-full text-xs font-bold text-[#836E7A] hover:text-[#3E2A38] hover:bg-white/60 transition cursor-pointer"
+                  aria-label="Kelas Saya"
+                >
+                  <GraduationCap className="w-4 h-4" /> <span className="hidden sm:inline">Kelas Saya</span>
+                </Link>
                 <button
                   type="button"
                   onClick={() => signOut({ redirectTo: "/" })}

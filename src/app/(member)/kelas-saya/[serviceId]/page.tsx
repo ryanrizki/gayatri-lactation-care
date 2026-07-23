@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { ArrowLeft, PlayCircle, FileText, ChevronRight } from "lucide-react";
+import { ArrowLeft, PlayCircle, FileText, ChevronRight, BookOpen } from "lucide-react";
 import { auth } from "@/auth";
 import { hasPaidEnrollment } from "@/lib/access";
 import { getService } from "@/lib/services";
@@ -60,18 +60,27 @@ export default async function KelasContentPage({
             <li key={mod.id}>
               <Link
                 href={`/kelas-saya/${serviceId}/${mod.id}`}
-                className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/20 hover:bg-muted sm:gap-4 sm:p-6"
+                className="group relative flex items-start gap-3 overflow-hidden rounded-2xl border border-[#F3D6E2] bg-card p-4 pl-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#F3D6E2] hover:shadow-md sm:gap-4 sm:p-6 sm:pl-7"
               >
-                {/* Number badge */}
-                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground group-hover:bg-card">
-                  {i + 1}
+                {/* Left accent bar */}
+                <span
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-[#F8B6D2] to-[#D85C99]"
+                />
+
+                {/* Icon + number badge on tinted circle */}
+                <span className="relative inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[#F3D6E2] bg-[#FCE9F1] transition-transform group-hover:scale-105">
+                  <BookOpen className="size-5 text-[#D85C99]" strokeWidth={2} />
+                  <span className="absolute -right-1 -top-1 inline-flex size-5 items-center justify-center rounded-full bg-[#3E2A38] text-[10px] font-bold text-white ring-2 ring-card">
+                    {i + 1}
+                  </span>
                 </span>
 
                 <div className="min-w-0 flex-1 space-y-1 pt-0.5">
-                  <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <span className="block text-xs font-semibold uppercase tracking-wide text-[#D85C99]">
                     Modul {i + 1}
                   </span>
-                  <h2 className="text-lg font-semibold leading-snug">
+                  <h2 className="text-lg font-semibold leading-snug text-[#3E2A38]">
                     {mod.title}
                   </h2>
                   {mod.description && (
@@ -80,22 +89,22 @@ export default async function KelasContentPage({
                     </p>
                   )}
 
-                  {/* Small meta */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-xs font-medium text-muted-foreground">
+                  {/* Meta chips */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 text-xs font-medium">
                     {mod.videoPath && (
-                      <span className="inline-flex items-center gap-1.5">
-                        <PlayCircle className="size-4" strokeWidth={2} /> Video
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FCE9F1] px-2.5 py-1 text-[#8B4A6E]">
+                        <PlayCircle className="size-3.5" strokeWidth={2} /> Video
                       </span>
                     )}
-                    <span className="inline-flex items-center gap-1.5">
-                      <FileText className="size-4" strokeWidth={2} />{" "}
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
+                      <FileText className="size-3.5" strokeWidth={2} />{" "}
                       {mod.materials.length} materi
                     </span>
                   </div>
                 </div>
 
                 <ChevronRight
-                  className="mt-1 size-5 shrink-0 self-center text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                  className="size-5 shrink-0 self-center text-[#D85C99] transition-transform group-hover:translate-x-0.5"
                   strokeWidth={2}
                 />
               </Link>
