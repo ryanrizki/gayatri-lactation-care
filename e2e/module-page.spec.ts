@@ -34,25 +34,23 @@ const DATABASE_URL = process.env.DATABASE_URL || dotenv.DATABASE_URL;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || dotenv.UPLOAD_DIR || "./uploads";
 
 // Seed into kelas_bekerja (NOT kelas_menyusui — admin-modul.spec asserts an
-// absolute module count there). Assertions here are scoped to our own titles.
+// absolute module count there). Assertions here are scoped to our own titles/ids.
 const CLASS_SERVICE_ID = "kelas_bekerja";
-const TEST_MODULE_PREFIX = "Modul PDF E2E";
-const MATERIAL_TITLE = "Materi Baca E2E";
-const TEST_EMAIL_DOMAIN = "@pdf-reader-e2e.test";
+const TEST_MODULE_PREFIX = "Modul Halaman E2E";
+const TEST_EMAIL_DOMAIN = "@module-page-e2e.test";
 const USER_PASSWORD = "RahasiaMama123";
 
-// A 2-page fixture so "Berikutnya" has a page to advance to.
-const FIXTURE_PDF_2 = resolve(process.cwd(), "e2e/fixtures/sample-2pages.pdf");
+const FIXTURE_MP4 = resolve(process.cwd(), "e2e/fixtures/sample.mp4");
 
 const prisma = new PrismaClient({ datasources: { db: { url: DATABASE_URL } } });
 
 const userEmail = `paid_${Date.now()}${TEST_EMAIL_DOMAIN}`;
-let materialId = "";
-let moduleId = "";
+let module1Id = "";
+let module2Id = "";
 
 async function registerUser(page: Page, email: string) {
   await page.goto("/daftar");
-  await page.getByLabel(/nama/i).fill("Mama PDF E2E");
+  await page.getByLabel(/nama/i).fill("Mama Halaman E2E");
   await page.getByLabel(/email/i).fill(email);
   await page.getByLabel(/password/i).fill(USER_PASSWORD);
   await page.getByRole("button", { name: /daftar/i }).click();
@@ -96,24 +94,36 @@ async function cleanupTestData() {
 
 test.beforeAll(async () => {
   await cleanupTestData();
-  const mod = await prisma.module.create({
+
+  // Negative sortOrders guarantee our two modules are the FIRST two (and
+  // adjacent) in the ordered list regardless of any other modules already
+  // seeded into kelas_bekerja by other specs — so module 1 is genuinely
+  // "Modul 1" (Prev disabled) and paging Next lands on module 2. Nothing else
+  // in the app uses negative sortOrder (createModule/admin use count-based ≥ 0).
+
+  // Module 1 (first in order) carries a video.
+  const m1 = await prisma.module.create({
     data: {
       serviceId: CLASS_SERVICE_ID,
-      title: `${TEST_MODULE_PREFIX} — Modul`,
-      description: "Modul dengan materi PDF untuk uji baca inline.",
-      sortOrder: 1,
-      materials: {
-        create: {
-          title: MATERIAL_TITLE,
-          type: "PDF",
-          filePath: copyFixture(FIXTURE_PDF_2, "materials", ".pdf"),
-        },
-      },
+      title: `${TEST_MODULE_PREFIX} — Satu`,
+      description: "Modul pertama dengan video.",
+      sortOrder: -2,
+      videoPath: copyFixture(FIXTURE_MP4, "videos", ".mp4"),
     },
-    include: { materials: true },
   });
-  moduleId = mod.id;
-  materialId = mod.materials[0].id;
+  module1Id = m1.id;
+
+  // Module 2 (second in order).
+  const m2 = await prisma.module.create({
+    data: {
+      serviceId: CLASS_SERVICE_ID,
+      title: `${TEST_MODULE_PREFIX} — Dua`,
+      description: "Modul kedua.",
+      sortOrder: -1,
+      videoPath: copyFixture(FIXTURE_MP4, "videos", ".mp4"),
+    },
+  });
+  module2Id = m2.id;
 });
 
 test.afterAll(async () => {
@@ -121,10 +131,13 @@ test.afterAll(async () => {
   await prisma.$disconnect();
 });
 
-test("PAID user reads a PDF material inline and pages Next/Prev", async ({ page }) => {
-  // Register + grant a PAID enrollment.
+test("PAID user: TOC lists modules, opens Modul 1, and pages to Modul 2", async ({
+  page,
+}) => {
   await registerUser(page, userEmail);
-  const user = await prisma.user.findUniqueOrThrow({ where: { email: userEmail } });
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { email: userEmail },
+  });
   await prisma.enrollment.create({
     data: {
       userId: user.id,
@@ -134,38 +147,51 @@ test("PAID user reads a PDF material inline and pages Next/Prev", async ({ page 
     },
   });
 
-  // Materials now live on the per-module page.
-  await page.goto(`/kelas-saya/${CLASS_SERVICE_ID}/${moduleId}`);
-  await expect(page).toHaveURL(
-    new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}/${moduleId}$`),
+  // The class page is a TOC listing both seeded modules as links.
+  await page.goto(`/kelas-saya/${CLASS_SERVICE_ID}`);
+  await expect(page).toHaveURL(new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}$`));
+  const link1 = page.locator(
+    `a[href="/kelas-saya/${CLASS_SERVICE_ID}/${module1Id}"]`,
   );
+  const link2 = page.locator(
+    `a[href="/kelas-saya/${CLASS_SERVICE_ID}/${module2Id}"]`,
+  );
+  await expect(link1).toBeVisible();
+  await expect(link2).toBeVisible();
 
-  // Scope to OUR material's row (the module may hold other PDF materials too).
-  const row = page.getByRole("listitem").filter({ hasText: MATERIAL_TITLE });
+  // Open Modul 1 → its own page: video + "Modul 1 / N" header.
+  await link1.click();
+  await expect(page).toHaveURL(
+    new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}/${module1Id}$`),
+  );
+  await expect(page.locator("video").first()).toBeVisible();
+  await expect(page.getByText(/Modul\s*1\s*\/\s*\d+/)).toBeVisible();
 
-  // The material starts as a row with a "Baca" button — NOT an inline viewer.
-  const baca = row.getByRole("button", { name: "Baca" });
-  await expect(baca).toBeVisible();
-  await expect(row.locator("canvas")).toHaveCount(0);
+  // At the first module, "Modul sebelumnya" is a disabled button, "Modul
+  // berikutnya" is an enabled link.
+  await expect(
+    page.getByRole("button", { name: /Modul sebelumnya/ }),
+  ).toBeDisabled();
+  const nextLink = page.getByRole("link", { name: /Modul berikutnya/ });
+  await expect(nextLink).toBeVisible();
 
-  // Open the reader → first page renders (canvas) and the pager shows "Hal 1 / 2".
-  await baca.click();
-  await expect(row.locator("canvas")).toBeVisible({ timeout: 15000 });
-  await expect(row.getByText(/Hal\s*1\s*\/\s*2/)).toBeVisible({ timeout: 15000 });
+  // Paging forward lands on Modul 2.
+  await nextLink.click();
+  await expect(page).toHaveURL(
+    new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}/${module2Id}$`),
+  );
+  await expect(page.getByText(/Modul\s*2\s*\/\s*\d+/)).toBeVisible();
 
-  // Previous is disabled on page 1.
-  await expect(row.getByRole("button", { name: /Sebelumnya/ })).toBeDisabled();
+  // On module 2, "Modul sebelumnya" is now an enabled link back to module 1.
+  await expect(
+    page.getByRole("link", { name: /Modul sebelumnya/ }),
+  ).toBeVisible();
+});
 
-  // Next advances to page 2.
-  await row.getByRole("button", { name: /Berikutnya/ }).click();
-  await expect(row.getByText(/Hal\s*2\s*\/\s*2/)).toBeVisible({ timeout: 15000 });
-
-  // On the last page, Next is disabled and Previous is enabled.
-  await expect(row.getByRole("button", { name: /Berikutnya/ })).toBeDisabled();
-  await expect(row.getByRole("button", { name: /Sebelumnya/ })).toBeEnabled();
-
-  // The gated PDF still serves 200 for the PAID buyer.
-  const pdf = await page.request.get(`/api/material/${materialId}`);
-  expect(pdf.status()).toBe(200);
-  expect(pdf.headers()["content-type"]).toContain("application/pdf");
+test("anon direct-visit to a module page redirects to /masuk", async ({
+  page,
+}) => {
+  await page.goto(`/kelas-saya/${CLASS_SERVICE_ID}/${module1Id}`);
+  await page.waitForURL(/\/masuk/);
+  expect(page.url()).toContain("/masuk");
 });

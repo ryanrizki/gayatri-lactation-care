@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { ArrowLeft, PlayCircle } from "lucide-react";
+import { ArrowLeft, PlayCircle, FileText, ChevronRight } from "lucide-react";
 import { auth } from "@/auth";
 import { hasPaidEnrollment } from "@/lib/access";
 import { getService } from "@/lib/services";
 import { getModulesForService } from "@/lib/modules-admin";
-import ModuleMaterials from "@/components/kelas/ModuleMaterials";
 
 export default async function KelasContentPage({
   params,
@@ -56,18 +55,19 @@ export default async function KelasContentPage({
           </p>
         </div>
       ) : (
-        <div className="space-y-5">
+        <ul className="space-y-3">
           {modules.map((mod, i) => (
-            <section
-              key={mod.id}
-              className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6"
-            >
-              {/* Module header */}
-              <div className="flex items-start gap-3">
-                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+            <li key={mod.id}>
+              <Link
+                href={`/kelas-saya/${serviceId}/${mod.id}`}
+                className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/20 hover:bg-muted sm:gap-4 sm:p-6"
+              >
+                {/* Number badge */}
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground group-hover:bg-card">
                   {i + 1}
                 </span>
-                <div className="space-y-1 pt-0.5">
+
+                <div className="min-w-0 flex-1 space-y-1 pt-0.5">
                   <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Modul {i + 1}
                   </span>
@@ -75,39 +75,33 @@ export default async function KelasContentPage({
                     {mod.title}
                   </h2>
                   {mod.description && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
                       {mod.description}
                     </p>
                   )}
+
+                  {/* Small meta */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-xs font-medium text-muted-foreground">
+                    {mod.videoPath && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <PlayCircle className="size-4" strokeWidth={2} /> Video
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1.5">
+                      <FileText className="size-4" strokeWidth={2} />{" "}
+                      {mod.materials.length} materi
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Video player */}
-              {mod.videoPath && (
-                <video
-                  controls
-                  preload="metadata"
-                  src={`/api/video/${mod.id}`}
-                  className="aspect-video w-full rounded-lg border border-border bg-black"
-                >
-                  Peramban Mama belum mendukung pemutar video.
-                </video>
-              )}
-
-              {/* Materials */}
-              {mod.materials.length > 0 && (
-                <ModuleMaterials materials={mod.materials} />
-              )}
-
-              {/* Module with neither video nor materials */}
-              {!mod.videoPath && mod.materials.length === 0 && (
-                <p className="flex items-center gap-2 text-sm italic text-muted-foreground">
-                  <PlayCircle className="size-4" strokeWidth={2} /> Materi modul ini segera hadir ya, Ma.
-                </p>
-              )}
-            </section>
+                <ChevronRight
+                  className="mt-1 size-5 shrink-0 self-center text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                  strokeWidth={2}
+                />
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
