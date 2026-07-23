@@ -202,9 +202,20 @@ test("userA (PAID) punya akses penuh: kartu kelas, halaman modul, video & materi
     page.locator(`a[href="/kelas-saya/${CLASS_SERVICE_ID}"]`),
   ).toBeVisible();
 
-  // The class content page renders a <video> player.
+  // The class content page is now a module list (TOC): it links to the seeded
+  // module rather than embedding the video itself.
   await page.goto(`/kelas-saya/${CLASS_SERVICE_ID}`);
   await expect(page).toHaveURL(new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}$`));
+  const moduleLink = page.locator(
+    `a[href="/kelas-saya/${CLASS_SERVICE_ID}/${nonPreviewModuleId}"]`,
+  );
+  await expect(moduleLink).toBeVisible();
+
+  // Navigating into the module page renders the <video> player there.
+  await moduleLink.click();
+  await expect(page).toHaveURL(
+    new RegExp(`/kelas-saya/${CLASS_SERVICE_ID}/${nonPreviewModuleId}$`),
+  );
   await expect(page.locator("video").first()).toBeVisible();
 
   // The gated video streams (200 full / 206 range) for the PAID buyer.
