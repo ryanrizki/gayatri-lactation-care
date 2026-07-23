@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { ArrowLeft, PlayCircle, Sparkles } from "lucide-react";
+import { ArrowLeft, PlayCircle } from "lucide-react";
 import { auth } from "@/auth";
 import { hasPaidEnrollment } from "@/lib/access";
 import { getService } from "@/lib/services";
@@ -27,35 +27,32 @@ export default async function KelasContentPage({
   const modules = await getModulesForService(serviceId);
 
   return (
-    <div className="space-y-6 animate-fadeIn max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Back link */}
       <Link
         href="/kelas-saya"
-        className="inline-flex items-center gap-1.5 min-h-[44px] text-sm font-bold text-[#836E7A] hover:text-[#3E2A38] transition"
+        className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="w-4 h-4" /> Kembali ke Kelas Saya
+        <ArrowLeft className="size-4" strokeWidth={2} /> Kembali ke Kelas Saya
       </Link>
 
       {/* Class title + description */}
-      <header className="space-y-2 border-b border-[#F3D6E2]/50 pb-5">
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D85C99] bg-[#FDEAF2] px-3.5 py-1 rounded-full uppercase tracking-wide">
-          <Sparkles className="w-3.5 h-3.5" /> Materi Kelas
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-display font-black text-[#3E2A38] leading-tight">
+      <div className="space-y-1 border-b border-border pb-5">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           {service.name}
         </h1>
         {service.description && (
-          <p className="text-sm sm:text-base text-[#5E4455] leading-relaxed max-w-[62ch]">
+          <p className="max-w-[62ch] text-sm text-muted-foreground">
             {service.description}
           </p>
         )}
-      </header>
+      </div>
 
       {modules.length === 0 ? (
-        <div className="bg-white border border-[#F3D6E2] rounded-3xl px-6 py-14 text-center">
-          <p className="text-sm text-[#5E4455] leading-relaxed">
+        <div className="rounded-xl border border-border bg-card px-6 py-14 text-center">
+          <p className="text-sm text-muted-foreground">
             Materi kelas segera hadir ya, Ma. Tim kami sedang menyiapkannya
-            dengan sepenuh hati 🌸
+            dengan sepenuh hati.
           </p>
         </div>
       ) : (
@@ -63,22 +60,22 @@ export default async function KelasContentPage({
           {modules.map((mod, i) => (
             <section
               key={mod.id}
-              className="bg-white border border-[#F3D6E2] rounded-3xl p-4 sm:p-6 space-y-4"
+              className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6"
             >
               {/* Module header */}
               <div className="flex items-start gap-3">
-                <span className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#FCE9F1] border border-[#F3D6E2] text-sm font-black text-[#D85C99]">
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
                   {i + 1}
                 </span>
                 <div className="space-y-1 pt-0.5">
-                  <span className="block text-xs font-bold uppercase tracking-wide text-[#9C8593]">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Modul {i + 1}
                   </span>
-                  <h2 className="text-lg font-display font-bold text-[#3E2A38] leading-snug">
+                  <h2 className="text-lg font-semibold leading-snug">
                     {mod.title}
                   </h2>
                   {mod.description && (
-                    <p className="text-sm text-[#5E4455] leading-relaxed">
+                    <p className="text-sm text-muted-foreground">
                       {mod.description}
                     </p>
                   )}
@@ -91,7 +88,7 @@ export default async function KelasContentPage({
                   controls
                   preload="metadata"
                   src={`/api/video/${mod.id}`}
-                  className="w-full rounded-2xl bg-black aspect-video border border-[#F3D6E2]"
+                  className="aspect-video w-full rounded-lg border border-border bg-black"
                 >
                   Peramban Mama belum mendukung pemutar video.
                 </video>
@@ -104,8 +101,8 @@ export default async function KelasContentPage({
 
               {/* Module with neither video nor materials */}
               {!mod.videoPath && mod.materials.length === 0 && (
-                <p className="flex items-center gap-2 text-sm text-[#9C8593] italic">
-                  <PlayCircle className="w-4 h-4" /> Materi modul ini segera hadir ya, Ma.
+                <p className="flex items-center gap-2 text-sm italic text-muted-foreground">
+                  <PlayCircle className="size-4" strokeWidth={2} /> Materi modul ini segera hadir ya, Ma.
                 </p>
               )}
             </section>

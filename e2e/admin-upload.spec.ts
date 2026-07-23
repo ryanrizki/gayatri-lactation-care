@@ -68,7 +68,8 @@ async function loginAsAdmin(page: Page) {
   await page.getByLabel("Email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD!);
   await page.locator("form").getByRole("button", { name: "Masuk" }).click();
-  await page.waitForURL("http://localhost:3000/");
+  // Login lands on /kelas-saya, then the (member) layout redirects an ADMIN to /admin.
+  await page.waitForURL(/\/admin$/);
 }
 
 // Unlink an uploaded file (relative to UPLOAD_DIR) if present; ignore misses so

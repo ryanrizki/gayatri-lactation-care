@@ -15,7 +15,7 @@ const errorClass =
   "rounded-2xl bg-[#FDECF3] border border-[#F3D6E2] text-[#B03A6E] text-sm px-4 py-3";
 const linkClass = "text-[#D85C99] font-semibold hover:underline";
 
-export function LoginFormReal({ callbackUrl = "/" }: { callbackUrl?: string }) {
+export function LoginFormReal({ callbackUrl = "/kelas-saya" }: { callbackUrl?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

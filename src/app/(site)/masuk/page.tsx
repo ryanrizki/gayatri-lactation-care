@@ -8,7 +8,7 @@ export default async function MasukPage({
   const { callbackUrl } = await searchParams;
   return (
     <div className="max-w-md mx-auto py-10">
-      <LoginFormReal callbackUrl={callbackUrl ?? "/"} />
+      <LoginFormReal callbackUrl={callbackUrl ?? "/kelas-saya"} />
     </div>
   );
 }

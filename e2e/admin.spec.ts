@@ -51,8 +51,8 @@ async function loginAsAdmin(page: Page) {
   await page.getByLabel("Email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD!);
   await page.locator("form").getByRole("button", { name: "Masuk" }).click();
-  // LoginFormReal sets window.location.href = callbackUrl ("/") on success.
-  await page.waitForURL("http://localhost:3000/");
+  // Login lands on /kelas-saya, then the (member) layout redirects an ADMIN to /admin.
+  await page.waitForURL(/\/admin$/);
 }
 
 test.beforeAll(() => {

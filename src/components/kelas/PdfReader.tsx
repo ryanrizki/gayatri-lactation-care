@@ -105,24 +105,24 @@ export default function PdfReader({ url, title }: { url: string; title: string }
   return (
     <div
       ref={containerRef}
-      className="mt-3 rounded-2xl border border-[#F3D6E2] bg-[#FFF6FA] overflow-hidden"
+      className="mt-3 rounded-2xl border border-border bg-muted overflow-hidden"
     >
       {failed ? (
         <div className="px-4 py-8 text-center space-y-3">
-          <p className="text-sm text-[#5E4455]">Gagal memuat PDF. Coba unduh untuk membaca.</p>
+          <p className="text-sm text-muted-foreground">Gagal memuat PDF. Coba unduh untuk membaca.</p>
           <a
             href={url}
             download
-            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-[#3E2A38] text-white text-sm font-bold"
+            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-primary text-primary-foreground text-sm font-bold"
           >
             <Download className="w-4 h-4" /> Unduh {title}
           </a>
         </div>
       ) : (
         <>
-          <div className="flex justify-center bg-[#EFE2E9] p-3 overflow-auto min-h-[120px]">
+          <div className="flex justify-center bg-muted p-3 overflow-auto min-h-[120px]">
             {numPages === 0 ? (
-              <div className="flex items-center gap-2 py-16 text-sm text-[#836E7A]">
+              <div className="flex items-center gap-2 py-16 text-sm text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> Memuat PDF…
               </div>
             ) : (
@@ -131,23 +131,23 @@ export default function PdfReader({ url, title }: { url: string; title: string }
           </div>
 
           {/* Pager */}
-          <div className="flex items-center justify-between gap-2 px-3 py-3 bg-white border-t border-[#F3D6E2]">
+          <div className="flex items-center justify-between gap-2 px-3 py-3 bg-card border-t border-border">
             <button
               type="button"
               onClick={() => go(-1)}
               disabled={page <= 1}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full text-sm font-bold text-[#3E2A38] bg-[#FDEAF2] border border-[#F8C9DD] hover:bg-[#FCE0EC] transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full text-sm font-bold text-foreground bg-muted border border-border hover:bg-muted/70 transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" /> Sebelumnya
             </button>
-            <span className="text-sm font-bold text-[#5E4455] tabular-nums">
+            <span className="text-sm font-bold text-foreground tabular-nums">
               Hal {page} / {numPages || "…"}
             </span>
             <button
               type="button"
               onClick={() => go(1)}
               disabled={numPages > 0 && page >= numPages}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full text-sm font-bold text-white bg-[#3E2A38] hover:bg-[#E97FB1] transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Berikutnya <ChevronRight className="w-4 h-4" />
             </button>

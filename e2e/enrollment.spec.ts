@@ -61,7 +61,7 @@ async function loginAsAdmin(page: Page) {
   await page.getByLabel("Email").fill(ADMIN_EMAIL);
   await page.getByLabel("Password").fill(ADMIN_PASSWORD!);
   await page.locator("form").getByRole("button", { name: "Masuk" }).click();
-  await page.waitForURL("http://localhost:3000/");
+  await page.waitForURL(/\/admin$/);
 }
 
 // Register a fresh account; registerUser auto-signs-in and redirects to "/".
@@ -80,7 +80,7 @@ async function loginAsUser(page: Page, email: string) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(USER_PASSWORD);
   await page.locator("form").getByRole("button", { name: "Masuk" }).click();
-  await page.waitForURL("http://localhost:3000/");
+  await page.waitForURL("**/kelas-saya");
 }
 
 // Delete every account this file may have created (by email domain), first
