@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut } from "lucide-react";
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import AdminNav from "@/components/admin/AdminNav";
-import { Button } from "@/components/ui/button";
+import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -44,17 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 <span className="text-xs text-muted-foreground">Administrator</span>
               </div>
             </div>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
-            >
-              <Button variant="outline" size="lg" type="submit" className="w-full justify-start">
-                <LogOut className="size-4" strokeWidth={2} />
-                Keluar
-              </Button>
-            </form>
+            <AdminLogoutButton variant="outline" size="lg" className="w-full justify-start" />
           </div>
         </aside>
 
@@ -68,17 +57,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </span>
               <span className="text-sm font-semibold">Panel Admin</span>
             </Link>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
-            >
-              <Button variant="ghost" size="sm" type="submit" aria-label="Keluar">
-                <LogOut className="size-4" strokeWidth={2} />
-                Keluar
-              </Button>
-            </form>
+            <AdminLogoutButton variant="ghost" size="sm" />
           </header>
 
           {/* Mobile nav strip */}
